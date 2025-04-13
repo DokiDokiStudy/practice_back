@@ -23,7 +23,6 @@ export class UserService {
             throw new ConflictException("Email already exists");
         }
         const user = this.usersRepository.create(signUpReq);
-        console.log("user", this.usersRepository.save(user));
         return this.usersRepository.save(user);
     }
 }

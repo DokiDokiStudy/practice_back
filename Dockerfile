@@ -10,7 +10,8 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"] 
+#start:dev로 hmr
+CMD ["npm", "run", "start:dev"] 
 
 # production
 # RUN npm run build

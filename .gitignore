@@ -1,6 +1,7 @@
 packages/*/package-lock.json
 sample/**/package-lock.json
 .env
+/dist
 
 # dependencies
 node_modules/

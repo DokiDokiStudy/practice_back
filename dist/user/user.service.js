@@ -31,7 +31,6 @@ let UserService = class UserService {
             throw new common_1.ConflictException("Email already exists");
         }
         const user = this.usersRepository.create(signUpReq);
-        console.log("user", this.usersRepository.save(user));
         return this.usersRepository.save(user);
     }
 };
