@@ -4,24 +4,26 @@ import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "./user.dto";
 
-//의존성 주입 받을수 있게함?
+//의존성 주입을 할수 있음
 @Injectable()
 export class UserService {
-  constructor(
-    //typeorm 의존성 주입 받음
-    @InjectRepository(User)
-    private usersRepository: Repository<User>
-  ) {}
+    constructor(
+        //UserEntity로 레포지토리 만듬
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
+    ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    //중복 검사
-    const existingUser = await this.usersRepository.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (existingUser) {
-      throw new ConflictException("Email already exists");
+    async create(signUpReq: CreateUserDto): Promise<User> {
+        console.log("signUpReq", signUpReq);
+        //중복 검사
+        const existingUser = await this.usersRepository.findOne({
+            where: { email: signUpReq.email },
+        });
+        if (existingUser) {
+            throw new ConflictException("Email already exists");
+        }
+        const user = this.usersRepository.create(signUpReq);
+        console.log("user", this.usersRepository.save(user));
+        return this.usersRepository.save(user);
     }
-    const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
-  }
 }

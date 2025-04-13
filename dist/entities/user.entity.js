@@ -24,7 +24,7 @@ let User = class User {
 };
 exports.User = User;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
@@ -36,31 +36,31 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'nick_name' }),
+    (0, typeorm_1.Column)({ name: "nick_name" }),
     __metadata("design:type", String)
 ], User.prototype, "nickName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'is_active', default: true }),
+    (0, typeorm_1.Column)({ name: "is_active", default: true }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isActive", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'enum',
-        enum: ['user', 'admin'],
-        default: 'user',
+        type: "enum",
+        enum: ["user", "admin"],
+        default: "user",
     }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
+    (0, typeorm_1.CreateDateColumn)({ name: "created_at" }),
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
+    (0, typeorm_1.UpdateDateColumn)({ name: "updated_at" }),
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.DeleteDateColumn)({ name: 'deleted_at', nullable: true }),
+    (0, typeorm_1.DeleteDateColumn)({ name: "deleted_at", nullable: true }),
     __metadata("design:type", Date)
 ], User.prototype, "deletedAt", void 0);
 exports.User = User = __decorate([

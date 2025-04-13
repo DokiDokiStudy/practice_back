@@ -22,34 +22,34 @@ let UserController = class UserController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async signup(createUserDto) {
-        const user = await this.usersService.create(createUserDto);
-        return { message: '유저 생성됨', user };
+    async signup(signUpReq) {
+        const user = await this.usersService.create(signUpReq);
+        return { message: "유저 생성됨", user };
     }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, swagger_1.ApiOperation)({ summary: '회원가입' }),
+    (0, swagger_1.ApiOperation)({ summary: "회원가입" }),
     (0, swagger_1.ApiResponse)({
         status: common_1.HttpStatus.CREATED,
-        description: '회원가입 성공',
+        description: "회원가입 성공",
         schema: {
-            type: 'object',
+            type: "object",
             properties: {
-                message: { type: 'string', example: '유저 생성됨' },
+                message: { type: "string", example: "유저 생성됨" },
                 user: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                         id: {
-                            type: 'string',
-                            example: 'uuid',
+                            type: "string",
+                            example: "uuid",
                         },
-                        email: { type: 'string', example: 'test@test.com' },
-                        nickName: { type: 'string', example: 'yang' },
-                        isActive: { type: 'boolean', example: true },
-                        role: { type: 'string', example: 'user' },
-                        createdAt: { type: 'string', example: '' },
-                        updatedAt: { type: 'string', example: '' },
+                        email: { type: "string", example: "test@test.com" },
+                        nickName: { type: "string", example: "yang" },
+                        isActive: { type: "boolean", example: true },
+                        role: { type: "string", example: "user" },
+                        createdAt: { type: "string", example: "" },
+                        updatedAt: { type: "string", example: "" },
                     },
                 },
             },
@@ -57,17 +57,17 @@ __decorate([
     }),
     (0, swagger_1.ApiResponse)({
         status: common_1.HttpStatus.CONFLICT,
-        description: '이미 존재하는 이메일',
+        description: "이미 존재하는 이메일",
     }),
-    (0, common_1.Post)('signup'),
+    (0, common_1.Post)("signup"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "signup", null);
 exports.UserController = UserController = __decorate([
-    (0, swagger_1.ApiTags)('create user'),
-    (0, common_1.Controller)('user'),
+    (0, swagger_1.ApiTags)("create user"),
+    (0, common_1.Controller)("user"),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

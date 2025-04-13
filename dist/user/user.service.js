@@ -22,14 +22,16 @@ let UserService = class UserService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
-    async create(createUserDto) {
+    async create(signUpReq) {
+        console.log("signUpReq", signUpReq);
         const existingUser = await this.usersRepository.findOne({
-            where: { email: createUserDto.email },
+            where: { email: signUpReq.email },
         });
         if (existingUser) {
-            throw new common_1.ConflictException('Email already exists');
+            throw new common_1.ConflictException("Email already exists");
         }
-        const user = this.usersRepository.create(createUserDto);
+        const user = this.usersRepository.create(signUpReq);
+        console.log("user", this.usersRepository.save(user));
         return this.usersRepository.save(user);
     }
 };
