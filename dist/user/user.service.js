@@ -23,12 +23,11 @@ let UserService = class UserService {
         this.usersRepository = usersRepository;
     }
     async create(signUpReq) {
-        console.log("signUpReq", signUpReq);
         const existingUser = await this.usersRepository.findOne({
             where: { email: signUpReq.email },
         });
         if (existingUser) {
-            throw new common_1.ConflictException("Email already exists");
+            throw new common_1.ConflictException("이미 존재하는 이메일입니다.");
         }
         const user = this.usersRepository.create(signUpReq);
         return this.usersRepository.save(user);

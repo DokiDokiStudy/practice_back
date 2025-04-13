@@ -14,13 +14,12 @@ export class UserService {
     ) {}
 
     async create(signUpReq: CreateUserDto): Promise<User> {
-        console.log("signUpReq", signUpReq);
-        //중복 검사
+        //이메일 중복 검사
         const existingUser = await this.usersRepository.findOne({
             where: { email: signUpReq.email },
         });
         if (existingUser) {
-            throw new ConflictException("Email already exists");
+            throw new ConflictException("이미 존재하는 이메일입니다.");
         }
         const user = this.usersRepository.create(signUpReq);
         return this.usersRepository.save(user);

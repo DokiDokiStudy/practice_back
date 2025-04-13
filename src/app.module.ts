@@ -15,7 +15,7 @@ import { UserModule } from "./user/user.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
             entities: [User],
-            synchronize: true, //자동으로 생성
+            synchronize: false,
         }),
         UserModule,
     ],

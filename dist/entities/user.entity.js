@@ -18,6 +18,7 @@ let User = class User {
     nickName;
     isActive;
     role;
+    phone;
     createdAt;
     updatedAt;
     deletedAt;
@@ -51,6 +52,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "phone", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: "created_at" }),
     __metadata("design:type", Date)

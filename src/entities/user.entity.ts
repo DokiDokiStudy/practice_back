@@ -31,6 +31,9 @@ export class User {
     })
     role: string;
 
+    @Column({ nullable: true })
+    phone: string;
+
     @CreateDateColumn({ name: "created_at" })
     createdAt: Date;
 

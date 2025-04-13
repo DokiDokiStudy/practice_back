@@ -5,6 +5,7 @@ export declare class User {
     nickName: string;
     isActive: boolean;
     role: string;
+    phone: string;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
