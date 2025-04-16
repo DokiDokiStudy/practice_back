@@ -5,6 +5,7 @@ import { AppService } from "./app.service";
 import { User } from "./signup/entities/signup.entity";
 import { UserModule } from "./signup/signup.module";
 import { LoginModule } from "./login/login.module";
+import { QuitModule } from "./quit/quit.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LoginModule } from "./login/login.module";
     }),
     UserModule,
     LoginModule,
+    QuitModule,
   ],
   controllers: [AppController],
   providers: [AppService],
