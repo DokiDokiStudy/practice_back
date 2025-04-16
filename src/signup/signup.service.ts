@@ -21,6 +21,12 @@ export class UserService {
     if (existingUser) {
       throw new ConflictException("email already exists");
     }
+    const existingNickname = await this.usersRepository.findOne({
+      where: { nickName: signUpReq.nickName },
+    });
+    if (existingNickname) {
+      throw new ConflictException("nickname already exists");
+    }
     const user = this.usersRepository.create(signUpReq);
     return this.usersRepository.save(user);
   }

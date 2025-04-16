@@ -22,13 +22,13 @@ export class ErrorFilter implements ExceptionFilter {
 
     const response = {
       success: false,
-      message: this.extractMessage(exception),
+      message: this.getErrorMessage(exception),
     };
 
     res.status(status).json(response);
   }
 
-  private extractMessage(exception: unknown): string | string[] {
+  private getErrorMessage(exception: unknown): string | string[] {
     if (exception instanceof HttpException) {
       const res = exception.getResponse();
       if (typeof res === "string") return res;
