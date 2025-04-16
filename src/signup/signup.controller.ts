@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpStatus } from "@nestjs/common";
 import { UserService } from "./signup.service";
 import { CreateUserDto } from "./dto/signup.dto";
 
-@Controller("user")
+@Controller("api")
 export class UserController {
   //서비스 의존성 주입
   constructor(private readonly usersService: UserService) {}

@@ -13,6 +13,7 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const signup_entity_1 = require("./signup/entities/signup.entity");
 const signup_module_1 = require("./signup/signup.module");
+const login_module_1 = require("./login/login.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -30,6 +31,7 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: false,
             }),
             signup_module_1.UserModule,
+            login_module_1.LoginModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
