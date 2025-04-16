@@ -6,6 +6,7 @@ import { User } from "./signup/entities/signup.entity";
 import { UserModule } from "./signup/signup.module";
 import { LoginModule } from "./login/login.module";
 import { QuitModule } from "./quit/quit.module";
+import { EmailCheckModule } from "./emailCheck/emailCheck.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { QuitModule } from "./quit/quit.module";
     UserModule,
     LoginModule,
     QuitModule,
+    EmailCheckModule,
   ],
   controllers: [AppController],
   providers: [AppService],
