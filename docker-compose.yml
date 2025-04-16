@@ -12,7 +12,9 @@ services:
       - mysql_data:/var/lib/mysql
 
   nestjs:
-    build: ./backend-api
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
     container_name: nestjs_app
     restart: always
     depends_on:
@@ -25,6 +27,9 @@ services:
       DB_NAME: ${DB_NAME}
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend-api:/app
+      - /app/node_modules # 빈 익명 볼륨으로 마운트해서 로컬 node_modules가 덮어씌우지 않도록 막는다.
 
   adminer:
     image: adminer
