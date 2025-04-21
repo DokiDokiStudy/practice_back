@@ -2,9 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+// import { ErrorFilter } from './common/error.filter';
+// import { SuccessFilter } from './common/success.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  //에러 응답 처리
+  // app.useGlobalFilters(new ErrorFilter());
+  //성공 응답 필터
+  // app.useGlobalInterceptors(new SuccessFilter());
 
   const options = new DocumentBuilder()
     .setTitle('NestJs Practice API')

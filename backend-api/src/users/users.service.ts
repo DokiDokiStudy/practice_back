@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
@@ -20,8 +21,12 @@ export class UsersService {
 
     if (existing) throw new BadRequestException('이미 존재하는 이메일입니다.');
 
-    // const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create(createUserDto);
+    const hashedPassword = await argon2.hash(createUserDto.password);
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
     user.role = 'user';
     user.isActive = true;
     await this.userRepository.save(user);

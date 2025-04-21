@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiBody,
@@ -11,6 +18,7 @@ import { FindPasswordDto } from './dto/find-password.dto';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('인증 API')
 @Controller('auth')
@@ -25,6 +33,13 @@ export class AuthController {
   @ApiSuccessResponse('로그인에 성공하였습니다.')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('auth-check')
+  authCheck(@Request() req) {
+    // return this.authService.authCheck(req.user);
+    return req.user;
   }
 
   // @Post('users')

@@ -1,21 +1,23 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-// import { CreateUserDto } from './dto/create-user.dto';
 import { FindPasswordDto } from './dto/find-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
+import * as argon2 from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -23,19 +25,33 @@ export class AuthService {
       email: loginDto.email,
     });
 
-    if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    if (!user)
+      throw new UnauthorizedException(
+        '이메일 또는 비밀번호가 일치하지 않습니다.',
+      );
 
-    // const isMatch = await bcrypt.compare(loginDto.password, user.password);
-    if (loginDto.password !== user.password)
-      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+    const isPasswordValid = await argon2.verify(
+      user.password,
+      loginDto.password,
+    );
+    console.log(isPasswordValid);
+    if (!isPasswordValid)
+      throw new UnauthorizedException(
+        '이메일 또는 비밀번호가 일치하지 않습니다.',
+      );
+
+    const payload = { sub: user.id, email: user.email };
+    const token = this.jwtService.sign(payload);
 
     return {
       message: '로그인에 성공하였습니다.',
       statusCode: 200,
       nickName: user.nickName,
-      token: 'Bearer ' + user.password,
+      token,
     };
   }
+
+  async authCheck(userDto: UserDto) {}
 
   // async signup(createUserDto: CreateUserDto): Promise<User> {
   //   try {
