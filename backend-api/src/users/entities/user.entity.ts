@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Post } from 'src/post/entities/post.entity';
 import {
   Entity,
   Column,
@@ -6,6 +7,7 @@ import {
   DeleteDateColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -29,6 +31,9 @@ export class User {
   @ApiProperty({ example: 'nickname' })
   @Column()
   nickName: string;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @ApiProperty({ example: 'true' })
   @Column()
