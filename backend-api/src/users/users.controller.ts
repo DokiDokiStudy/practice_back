@@ -7,12 +7,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('유저 API')
 @Controller('users')
@@ -33,6 +35,7 @@ export class UsersController {
     return await this.usersService.validateEmail(email);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @ApiOperation({ summary: '회원 정보 수정' })
   async updateUser(
@@ -42,6 +45,7 @@ export class UsersController {
     return await this.usersService.updateUser(email, updateUserDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @ApiOperation({ summary: '회원 탈퇴' })
   deleteUser(@Param('id') email: string) {

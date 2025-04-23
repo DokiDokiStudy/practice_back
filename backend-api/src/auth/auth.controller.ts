@@ -19,6 +19,7 @@ import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthRequest } from './type/jwt';
 
 @ApiTags('인증 API')
 @Controller('auth')
@@ -37,9 +38,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('auth-check')
-  authCheck(@Request() req) {
-    // return this.authService.authCheck(req.user);
-    return req.user;
+  authCheck(@Request() req: AuthRequest) {
+    return this.authService.authCheck(req);
   }
 
   // @Post('users')

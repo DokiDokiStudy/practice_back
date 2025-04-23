@@ -10,7 +10,7 @@ import { LoginDto } from './dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import { UserDto } from './dto/user.dto';
+import { AuthRequest, JwtPayload } from './type/jwt';
 
 @Injectable()
 export class AuthService {
@@ -31,17 +31,22 @@ export class AuthService {
       );
 
     const isPasswordValid = await argon2.verify(
+      // 순서 중요
       user.password,
       loginDto.password,
     );
-    console.log(isPasswordValid);
+
     if (!isPasswordValid)
       throw new UnauthorizedException(
         '이메일 또는 비밀번호가 일치하지 않습니다.',
       );
 
-    const payload = { sub: user.id, email: user.email };
-    const token = this.jwtService.sign(payload);
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      nickName: user.nickName,
+    };
+    const token = `Bearer ${this.jwtService.sign(payload)}`;
 
     return {
       message: '로그인에 성공하였습니다.',
@@ -51,7 +56,9 @@ export class AuthService {
     };
   }
 
-  async authCheck(userDto: UserDto) {}
+  authCheck(request: AuthRequest) {
+    return request.user;
+  }
 
   // async signup(createUserDto: CreateUserDto): Promise<User> {
   //   try {
