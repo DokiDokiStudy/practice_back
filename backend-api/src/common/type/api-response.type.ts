@@ -11,4 +11,5 @@ export type ApiErrorResponse = Omit<ApiResponse, 'data'> & {
   error: string;
   errorCode?: string;
   details?: Record<string, any>;
+  errorType: 'http' | 'runtime';
 };
