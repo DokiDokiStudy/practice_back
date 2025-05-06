@@ -1,11 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Category } from 'src/cateogries/entities/cateogory.entity';
+import { Subcategory } from 'src/cateogries/entities/sub.caterory.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
+
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -32,6 +38,36 @@ export class Post {
   @ApiProperty({ example: '게시물 내용' })
   @Column('text')
   content: string;
+
+  @ManyToOne(() => Category, (category) => category.posts)
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @ApiProperty({ example: 1 })
+  @Column()
+  categoryId: number;
+
+  @ManyToOne(() => Subcategory, (subcategory) => subcategory.posts, {
+    nullable: true,
+  })
+  
+  @JoinColumn({ name: 'subcategoryId' })
+  subcategory: Subcategory;
+
+  @ApiProperty({ example: 1 })
+  @Column({ nullable: true })
+  subcategoryId: number;
+
+  @ApiProperty({ example: true })
+  @Column({ default: true })
+  isActive: boolean;
+
+  @ApiProperty({ example: 0 })
+  @Column({ default: 0 })
+  viewCount: number;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   @ApiProperty({ example: '0000-00-00' })
   @CreateDateColumn()
