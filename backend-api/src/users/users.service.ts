@@ -79,7 +79,7 @@ export class UsersService {
       statusCode: 200,
       id: updated.id,
       email: updated.email,
-      name: updated.name,
+      name: updated.nickName,
     };
   }
 

@@ -24,10 +24,6 @@ export class User {
   @Column()
   password: string;
 
-  @ApiProperty({ example: 'name' })
-  @Column()
-  name: string;
-
   @ApiProperty({ example: 'nickname' })
   @Column()
   nickName: string;
@@ -53,4 +49,12 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ApiProperty({ example: '당신의 출신 초등학교는?' })
+  @Column()
+  securityQuestion: string;
+
+  @ApiProperty({ example: '서울초등학교' })
+  @Column()
+  securityAnswer: string;
 }
