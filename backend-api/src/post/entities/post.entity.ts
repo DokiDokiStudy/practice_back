@@ -79,4 +79,8 @@ export class Post {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ApiProperty({ example: 0 })
+  @Column({ default: 0 })
+  likeCount: number;
 }

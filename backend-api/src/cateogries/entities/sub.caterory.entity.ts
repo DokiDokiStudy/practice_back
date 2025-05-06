@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Post } from "src/post/entities/post.entity";
-import { Column, CreateDateColumn, OneToMany } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, OneToMany, UpdateDateColumn } from "typeorm";
 import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
 import { Entity } from "typeorm/decorator/entity/Entity";
 import { ManyToOne } from "typeorm/decorator/relations/ManyToOne";
@@ -23,4 +23,10 @@ export class Subcategory {
 
   @OneToMany(() => Post, (post) => post.subcategory)
   posts: Post[];
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+    
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
