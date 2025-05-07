@@ -13,7 +13,4 @@ export class CreatePostDto {
   @ApiProperty()
   @IsNotEmpty()
   categoryId: number;
-
-  @ApiProperty({ required: false })
-  subcategoryId?: number;
 }
