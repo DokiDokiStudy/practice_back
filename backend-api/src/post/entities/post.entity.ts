@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/cateogries/entities/cateogory.entity';
-import { Subcategory } from 'src/cateogries/entities/sub.caterory.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 
@@ -27,10 +26,6 @@ export class Post {
   // @JoinColumn({ name: 'author_id' }) 원하는 컬럼 이름 설정
   user: User;
 
-  @ApiProperty({ example: '홍길동' })
-  @Column()
-  author: string;
-
   @ApiProperty({ example: '게시물 제목' })
   @Column()
   title: string;
@@ -46,17 +41,6 @@ export class Post {
   @ApiProperty({ example: 1 })
   @Column()
   categoryId: number;
-
-  @ManyToOne(() => Subcategory, (subcategory) => subcategory.posts, {
-    nullable: true,
-  })
-  
-  @JoinColumn({ name: 'subcategoryId' })
-  subcategory: Subcategory;
-
-  @ApiProperty({ example: 1 })
-  @Column({ nullable: true })
-  subcategoryId: number;
 
   @ApiProperty({ example: true })
   @Column({ default: true })
