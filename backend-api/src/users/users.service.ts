@@ -98,12 +98,4 @@ export class UsersService {
       statusCode: 200,
     };
   }
-
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
 }

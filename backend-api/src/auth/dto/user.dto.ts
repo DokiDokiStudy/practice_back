@@ -6,12 +6,4 @@ export class UserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // nickName: string;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // name: string;
 }

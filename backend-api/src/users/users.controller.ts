@@ -35,6 +35,14 @@ export class UsersController {
     return await this.usersService.validateEmail(email);
   }
 
+  //TODO? 페이로드 만들때 토큰을 저장해서 굳이 필요없을 수도?
+  //   @Patch('me')
+  // async updateUser(
+  //   @Request() req: AuthRequest,
+  //   @Body() dto: UpdateUserDto,
+  // ) {
+  //   return this.usersService.updateUser(req.user.email, dto);
+  // }
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @ApiOperation({ summary: '회원 정보 수정' })
@@ -51,19 +59,4 @@ export class UsersController {
   deleteUser(@Param('id') email: string) {
     return this.usersService.deleteUser(email);
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
 }
