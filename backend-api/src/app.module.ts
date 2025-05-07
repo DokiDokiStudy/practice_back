@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtStrategy } from './auth/jwt/jwt.strategy';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JwtStrategy } from './auth/jwt/jwt.strategy';
     }),
     AuthModule,
     UsersModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
