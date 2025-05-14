@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { MainCategoryService } from './main_category.service';
 import { CreateMainCategoryDto } from './dto/create-main_category.dto';
-import { UpdateMainCategoryDto } from './dto/update-main_category.dto';
 
 @Controller('main-category')
 export class MainCategoryController {
@@ -13,8 +12,8 @@ export class MainCategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.mainCategoryService.findAll();
+  get() {
+    return this.mainCategoryService.get();
   }
 
   @Get(':id')
@@ -22,13 +21,8 @@ export class MainCategoryController {
     return this.mainCategoryService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMainCategoryDto: UpdateMainCategoryDto) {
-    return this.mainCategoryService.update(+id, updateMainCategoryDto);
-  }
-
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mainCategoryService.remove(+id);
+  delete(@Param('id') id: string) {
+    return this.mainCategoryService.delete(+id);
   }
 }
