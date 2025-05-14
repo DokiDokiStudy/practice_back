@@ -22,5 +22,5 @@ export class Like {
   comment: Comment;
 
   @Column()
-  like: boolean;
+  reactionType: string;
 }
