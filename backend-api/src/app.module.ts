@@ -6,6 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtStrategy } from './auth/jwt/jwt.strategy';
 import { PostModule } from './post/post.module';
+import { MainCategoryModule } from './main_category/main_category.module';
+import { CategoryModule } from './category/category.module';
+import { SubCategoryModule } from './sub_category/sub_category.module';
+import { CommentModule } from './comment/comment.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -24,6 +29,11 @@ import { PostModule } from './post/post.module';
     AuthModule,
     UsersModule,
     PostModule,
+    MainCategoryModule,
+    CategoryModule,
+    SubCategoryModule,
+    CommentModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

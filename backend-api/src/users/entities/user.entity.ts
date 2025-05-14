@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Comment } from 'src/comment/entities/comment.entity';
+import { Like } from 'src/like/entities/like.entity';
 import { Post } from 'src/post/entities/post.entity';
 import {
   Entity,
@@ -32,9 +34,6 @@ export class User {
   @Column()
   nickName: string;
 
-  @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
-
   @ApiProperty({ example: 'true' })
   @Column()
   isActive: boolean;
@@ -53,4 +52,13 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
 }
