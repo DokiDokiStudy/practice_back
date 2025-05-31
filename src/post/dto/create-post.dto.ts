@@ -4,7 +4,7 @@ import { IsNotEmpty } from 'class-validator';
 export class CreatePostDto {
   @ApiProperty()
   @IsNotEmpty()
-  mainCategoryId: number;
+  categoryId: number;
 
   @ApiProperty()
   @IsNotEmpty()

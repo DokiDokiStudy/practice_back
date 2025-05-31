@@ -5,11 +5,13 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Injectable()
 export class PostService {
@@ -18,10 +20,16 @@ export class PostService {
     private readonly postRepository: Repository<Post>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
   ) {}
 
   async get() {
-    const posts = await this.postRepository.find();
+    const posts = await this.postRepository.find({
+      relations: ['category'],
+    });
 
     return {
       statusCode: 200,
@@ -30,28 +38,55 @@ export class PostService {
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {
-    const { id, nickName } = request.user;
-    const { title, content } = createPostDto;
+    try {
+      const { id, nickName } = request.user;
+      const { categoryId, title, content } = createPostDto;
+      const category = await this.categoryRepository.findOneBy({
+        id: categoryId,
+      });
 
-    await this.postRepository.save({
-      user: { id },
-      author: nickName,
-      title,
-      content,
-    });
+      if (!category)
+        throw new NotFoundException('존재하지 않는 카테고리입니다.');
 
-    return {
-      statusCode: 201,
-      message: '게시물이 생성되었습니다.',
-    };
+      await this.postRepository.save({
+        user: { id },
+        author: nickName,
+        category,
+        title,
+        content,
+      });
+
+      return {
+        statusCode: 201,
+        message: '게시물이 생성되었습니다.',
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        statusCode: 500,
+        message: '게시물 생성에 실패했습니다.',
+      };
+    }
   }
 
   async findOne(id: number) {
-    const post = await this.postRepository.findOneBy({
-      id,
+    const post = await this.postRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['comments', 'comments.likes', 'comments.children'],
     });
 
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
+
+    const comments = await this.commentRepository.find({
+      where: {
+        post: { id },
+        parent: IsNull(),
+      },
+      order: { createdAt: 'ASC' },
+      relations: ['children'],
+    });
 
     const { author, title, content } = post;
 
@@ -60,6 +95,7 @@ export class PostService {
       author,
       title,
       content,
+      comments,
     };
   }
 
