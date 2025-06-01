@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Post } from 'src/post/entities/post.entity';
+import { Posts } from 'src/posts/entities/posts.entity';
+import { Likes } from 'src/likes/entities/likes.entity';
+import { Comments } from 'src/comments/entities/comments.entity';
 import {
   Entity,
   Column,
@@ -12,6 +14,13 @@ import {
 
 @Entity()
 export class User {
+  @OneToMany(() => Posts, (post) => post.user)
+  posts: Posts[];
+  @OneToMany(() => Likes, (like) => like.user)
+  likes: Likes[];
+  @OneToMany(() => Comments, (comment) => comment.user)
+  comments: Comments[];
+
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
@@ -31,9 +40,6 @@ export class User {
   @ApiProperty({ example: 'nickname' })
   @Column()
   nickName: string;
-
-  @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
 
   @ApiProperty({ example: 'true' })
   @Column()

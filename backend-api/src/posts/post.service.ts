@@ -6,7 +6,7 @@ import {
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from './entities/post.entity';
+import { Posts } from './entities/posts.entity';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
@@ -14,8 +14,8 @@ import { User } from 'src/users/entities/user.entity';
 @Injectable()
 export class PostService {
   constructor(
-    @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>,
+    @InjectRepository(Posts)
+    private readonly postRepository: Repository<Posts>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
