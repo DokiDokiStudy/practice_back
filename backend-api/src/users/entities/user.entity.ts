@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
-  Index,
 } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
@@ -17,7 +16,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Index()
   @Column({ unique: true, length: 255 })
   email: string;
 
