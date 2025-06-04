@@ -1,5 +1,5 @@
 services:
   nestjs:
     build:
-      context: ./backend-api
+      context: ./
       dockerfile: Dockerfile.dev

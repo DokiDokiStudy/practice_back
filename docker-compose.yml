@@ -13,7 +13,7 @@ services:
 
   nestjs:
     build:
-      context: ./backend-api
+      context: .
       dockerfile: Dockerfile
     container_name: nestjs_app
     restart: always
@@ -28,7 +28,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./backend-api:/app
+      - .:/app
       - /app/node_modules # 빈 익명 볼륨으로 마운트해서 로컬 node_modules가 덮어씌우지 않도록 막는다.
 
 volumes:
