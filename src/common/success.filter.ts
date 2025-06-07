@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 export class SuccessFilter<T> implements NestInterceptor<T, any> {
   intercept(_: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => ({
+      map(data => ({
         success: true,
         data,
       })),

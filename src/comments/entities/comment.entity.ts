@@ -1,45 +1,46 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { Post } from 'src/posts/entities/post.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Post } from 'src/posts/entities/post.entity';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  RelationId,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.comments)
-  @JoinColumn({ name: 'userId' })
-  user: User;
-
-  @ManyToOne(() => Post, (post) => post.comments)
-  @JoinColumn({ name: 'postId' })
-  post: Post;
-
-  @ManyToOne(() => Comment, (comment) => comment.children, { nullable: true })
-  @JoinColumn({ name: 'parentId' })
+  @ManyToOne(() => Comment, (comment: Comment) => comment.children, {
+    nullable: true,
+  })
   parent: Comment;
 
-  @OneToMany(() => Comment, (comment) => comment.parent)
+  @OneToMany(() => Comment, (comment: Comment) => comment.parent, {
+    nullable: true,
+  })
   children: Comment[];
 
-  @OneToMany(() => Like, (like) => like.comment)
-  likes: Like[];
+  @ManyToOne(() => User, (user: User) => user.comments)
+  user: User;
 
-  @Column({ length: 255 })
-  name: string;
+  @ManyToOne(() => Post, (post: Post) => post.comments)
+  post: Post;
 
-  @Column('text')
+  @RelationId((comment: Comment) => comment.post)
+  postId: number;
+
+  @Column()
+  author: string;
+
+  @Column()
   content: string;
 
   @CreateDateColumn()
@@ -48,6 +49,9 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => Like, (like: Like) => like.comment, { nullable: true })
+  likes: Like[];
 }

@@ -19,7 +19,7 @@ export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user: User) => user.posts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 
