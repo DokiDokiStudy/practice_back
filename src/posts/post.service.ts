@@ -10,8 +10,8 @@ import { Post } from './entities/post.entity';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Category } from 'src/category/entities/category.entity';
-import { Comment } from 'src/comment/entities/comment.entity';
+import { Category } from 'src/categories/entities/category.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Injectable()
 export class PostService {

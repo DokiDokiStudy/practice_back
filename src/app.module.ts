@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtStrategy } from './auth/jwt/jwt.strategy';
-import { PostModule } from './post/post.module';
-import { CategoryModule } from './category/category.module';
-import { CommentModule } from './comment/comment.module';
-import { LikeModule } from './like/like.module';
+import { PostModule } from './posts/post.module';
+import { CategoryModule } from './categories/category.module';
+import { CommentModule } from './comments/comment.module';
+import { LikeModule } from './likes/like.module';
 
 @Module({
   imports: [

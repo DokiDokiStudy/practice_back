@@ -8,7 +8,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from 'src/post/entities/post.entity';
+import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from './entities/comment.entity';
 import { User } from 'src/users/entities/user.entity';
 

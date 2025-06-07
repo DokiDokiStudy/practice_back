@@ -1,31 +1,35 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Category, (category) => category.children, {
+  // 실제 DB 컬럼이 생김 (외래 키)
+  @ManyToOne(() => Category, (category: Category) => category.children, {
     nullable: true,
+    onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'parentId' })
   parent: Category;
 
-  @OneToMany(() => Category, (category) => category.parent)
+  // DB에는 컬럼이 생기지 않지만 ORM에서는 역참조 용도로 사용 가능
+  @OneToMany(() => Category, (category: Category) => category.parent)
   children: Category[];
 
-  @Column({ length: 255 })
+  @OneToMany(() => Post, (post: Post) => post.category)
+  posts: Post[];
+
+  @Column()
   name: string;
 
   @CreateDateColumn()
@@ -34,9 +38,6 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date;
-
-  @OneToMany(() => Post, (post) => post.category)
-  posts: Post[];
 }

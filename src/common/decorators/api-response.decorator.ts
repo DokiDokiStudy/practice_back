@@ -1,4 +1,3 @@
-// src/common/decorators/api-success-response.decorator.ts
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 
