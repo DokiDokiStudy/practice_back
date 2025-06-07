@@ -1,56 +1,46 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Comment } from 'src/comment/entities/comment.entity';
-import { Like } from 'src/like/entities/like.entity';
-import { Post } from 'src/post/entities/post.entity';
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
-  DeleteDateColumn,
-  UpdateDateColumn,
+  Column,
   CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Post } from 'src/posts/entities/post.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Entity()
 export class User {
-  @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 'test@gmail.com' })
-  @Column({ unique: true })
+  @Column({ unique: true, length: 255 })
   email: string;
 
-  @ApiProperty({ example: 'password' })
-  @Column()
+  @Column({ length: 255 })
   password: string;
 
-  @ApiProperty({ example: 'name' })
-  @Column()
+  @Column({ length: 255 })
   name: string;
 
-  @ApiProperty({ example: 'nickname' })
-  @Column()
+  @Column({ length: 255 })
   nickName: string;
 
-  @ApiProperty({ example: 'true' })
-  @Column()
+  @Column({ default: true })
   isActive: boolean;
 
-  @ApiProperty({ example: '최고 관리자' })
-  @Column()
+  @Column({ length: 255 })
   role: string;
 
-  @ApiProperty({ example: '2025-04-15' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2025-04-15' })
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
 
   @OneToMany(() => Post, (post) => post.user)
