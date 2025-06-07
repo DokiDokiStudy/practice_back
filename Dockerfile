@@ -1,9 +1,22 @@
-# 임시시
-FROM php:8.1-apache
+FROM node:18 AS build
 
-RUN a2enmod rewrite
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
 
-WORKDIR /var/www/html
-COPY . /var/www/html/
+COPY . .
+RUN npm run build
 
-RUN chown -R www-data:www-data /var/www/html
+# 프로덕션 환경 설정
+FROM node:18-slim
+
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/tsconfig*.json ./
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]
+
