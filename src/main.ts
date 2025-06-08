@@ -18,6 +18,7 @@ async function bootstrap() {
     .setDescription('NestJs Practice Backend Project API Documentation')
     .setVersion('1.0')
     .addServer('http://localhost:3000/', 'Local environment')
+    .addBearerAuth()
     // .addServer('https://staging.yourapi.com/', 'Staging')
     // .addServer('https://production.yourapi.com/', 'Production')
     // .addTag('Your API Tag')
