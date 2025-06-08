@@ -5,7 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRequest, JwtPayload } from './type/jwt';
+import { JwtPayload } from './type/jwt';
 
 @Injectable()
 export class AuthService {
@@ -39,15 +39,9 @@ export class AuthService {
       message: '로그인에 성공하였습니다.',
       data: {
         nickName: user.nickName,
+        role: user.role,
         token,
       },
-    };
-  }
-
-  me(request: AuthRequest) {
-    return {
-      message: '유저 정보 조회에 성공하였습니다.',
-      data: request.user,
     };
   }
 }
