@@ -5,10 +5,10 @@ import {
   Body,
   Query,
   Patch,
-  Param,
   Delete,
   HttpCode,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckEmailDto } from './dto/check-email.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { AuthRequest } from 'src/auth/type/jwt';
 
 @ApiTags('유저 API')
 @Controller('users')
@@ -35,19 +36,19 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Patch()
   @HttpCode(200)
   async updateUser(
-    @Param('id') id: number,
+    @Request() req: AuthRequest,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.usersService.updateUser(id, updateUserDto);
+    return await this.usersService.updateUser(req.user.id, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
+  @Delete()
   @HttpCode(200)
-  deleteUser(@Param('id') id: number) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Request() req: AuthRequest) {
+    return this.usersService.deleteUser(req.user.id);
   }
 }
