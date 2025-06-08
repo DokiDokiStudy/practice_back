@@ -39,6 +39,7 @@ export class AuthService {
       message: '로그인에 성공하였습니다.',
       data: {
         nickName: user.nickName,
+        role: user.role,
         token,
       },
     };
