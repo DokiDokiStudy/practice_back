@@ -23,6 +23,13 @@ import { AuthRequest } from 'src/auth/type/jwt';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  @HttpCode(200)
+  me(@Request() req: AuthRequest) {
+    return this.usersService.me(req.user);
+  }
+
   @Post()
   @HttpCode(200)
   signUp(@Body() createUserDto: CreateUserDto) {

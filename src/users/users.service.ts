@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
+import { JwtPayload } from 'src/auth/type/jwt';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,13 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
+  me(user: JwtPayload) {
+    return {
+      message: '조회에 성공하였습니다.',
+      data: user,
+    };
+  }
 
   async signUp(createUserDto: CreateUserDto) {
     const existingEmail = await this.userRepository.findOneBy({
