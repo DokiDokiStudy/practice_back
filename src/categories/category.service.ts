@@ -38,14 +38,12 @@ export class CategoryService {
 
       return {
         message: '카테고리 생성에 성공하였습니다.',
-        statusCode: 200,
         name: category.name,
       };
     } catch (error) {
       console.error(error);
       return {
         message: '카테고리 생성에 실패했습니다.',
-        statusCode: 500,
       };
     }
   }
@@ -53,30 +51,28 @@ export class CategoryService {
   async findAll() {
     try {
       const categories = await this.categoryRepository.find({
-        relations: ['parent'],
+        relations: ['parent', 'children', 'children.children'],
+      });
+      const parentCategories = categories.filter((c) => !c.parent);
+
+      const childrenCategories = (category: Category): any => ({
+        id: category.id,
+        name: category.name,
+        children: category.children?.map(childrenCategories) || [],
       });
 
       return {
-        statusCode: 200,
-        categories,
+        categories: parentCategories.map(childrenCategories),
       };
     } catch (error) {
       console.error(error);
       return {
-        statusCode: 500,
         message: '카테고리 조회에 실패했습니다.',
       };
     }
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} category`;
-  // }
-
-  // update(id: number /* updateCategoryDto: UpdateCategoryDto */) {
-  //   return `This action updates a #${id} category`;
-  // }
-
+  //TODOS: 하위 카테고리가 남아있을경우? 다 삭제?
   async remove(id: number) {
     const category = await this.categoryRepository.findOne({
       where: { id },
@@ -87,7 +83,6 @@ export class CategoryService {
     await this.categoryRepository.softDelete({ id });
 
     return {
-      statusCode: 200,
       message: '게시물이 삭제되었습니다.',
     };
   }
