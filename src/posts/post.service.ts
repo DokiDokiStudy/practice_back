@@ -57,7 +57,7 @@ export class PostService {
       });
 
       return {
-        statusCode: 201,
+        statusCode: 200,
         message: '게시물이 생성되었습니다.',
       };
     } catch (error) {
@@ -96,6 +96,7 @@ export class PostService {
       title,
       content,
       comments,
+      commentCount: comments.length,
     };
   }
 

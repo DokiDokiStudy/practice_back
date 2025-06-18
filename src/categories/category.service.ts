@@ -52,11 +52,27 @@ export class CategoryService {
 
   async findAll() {
     try {
-      const categories = await this.categoryRepository.find({
-        relations: ['parent'],
-      });
+      const categories = (await this.categoryRepository.query(`
+        WITH RECURSIVE category_path (id, name, parentId, depth) AS (
+          -- 1단계: 최상위 카테고리 선택 (부모가 없는 것)
+          SELECT id, name, parentId, 1
+          FROM category
+          WHERE 
+            parentId IS NULL AND 
+            deletedAt IS NOT NULL
+
+          UNION ALL
+
+          -- 2단계 이후: 자식들을 부모 기준으로 찾아서 depth를 1씩 증가
+          SELECT c.id, c.name, c.parentId, cp.depth + 1
+          FROM category c
+          JOIN category_path cp ON c.parentId = cp.id
+        )
+        SELECT * FROM category_path;
+      `)) as Category[];
 
       return {
+        message: '카테고리 조회에 성공했습니다.',
         statusCode: 200,
         categories,
       };
