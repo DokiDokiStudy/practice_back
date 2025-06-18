@@ -28,11 +28,11 @@ export class PostService {
 
   async get() {
     const posts = await this.postRepository.find({
-      relations: ['category'],
+      relations: ['category', 'category.parent', 'category.parent.parent'],
+      order: { createdAt: 'DESC' },
     });
 
     return {
-      statusCode: 200,
       posts,
     };
   }
@@ -57,13 +57,11 @@ export class PostService {
       });
 
       return {
-        statusCode: 201,
         message: '게시물이 생성되었습니다.',
       };
     } catch (error) {
       console.error(error);
       return {
-        statusCode: 500,
         message: '게시물 생성에 실패했습니다.',
       };
     }
@@ -71,31 +69,28 @@ export class PostService {
 
   async findOne(id: number) {
     const post = await this.postRepository.findOne({
-      where: {
-        id,
-      },
-      relations: ['comments', 'comments.likes', 'comments.children'],
+      where: { id },
+      relations: ['comments', 'comments.children'],
     });
 
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
-    const comments = await this.commentRepository.find({
-      where: {
-        post: { id },
-        parent: IsNull(),
-      },
-      order: { createdAt: 'ASC' },
-      relations: ['children'],
+    const parentComments = post.comments.filter((comment) => !comment.parent);
+
+    const childrenComments = (comment: Comment): any => ({
+      id: comment.id,
+      content: comment.content,
+      childrenCount: comment.children?.length ?? 0,
+      children: (comment.children ?? []).map(childrenComments),
     });
 
-    const { author, title, content } = post;
-
     return {
-      statusCode: 200,
-      author,
-      title,
-      content,
-      comments,
+      id: post.id,
+      title: post.title,
+      author: post.author,
+      content: post.content,
+      commentsCount: parentComments.length || [],
+      comments: parentComments.map(childrenComments),
     };
   }
 
@@ -118,7 +113,6 @@ export class PostService {
     await this.postRepository.save(updatedPost);
 
     return {
-      statusCode: 200,
       message: '게시물이 수정되었습니다.',
     };
   }
@@ -141,7 +135,6 @@ export class PostService {
     await this.postRepository.softDelete({ id });
 
     return {
-      statusCode: 200,
       message: '게시물이 삭제되었습니다.',
     };
   }
