@@ -1,14 +1,24 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { HttpCode } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 
 @ApiTags('카테고리 API')
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Post()
   @ApiOperation({
@@ -29,6 +39,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get()
   @ApiOperation({
@@ -68,6 +79,7 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiOperation({
     summary: '카테고리 삭제',
@@ -76,7 +88,7 @@ export class CategoryController {
   @ApiParam({ name: 'id', description: '카테고리 ID', example: 1 })
   @ApiResponse({
     status: 200,
-    description: '카테고리 삭제 성공',
+    description: '카테고리 삭제에 성공하였습니다.',
     schema: {
       type: 'object',
       properties: {
