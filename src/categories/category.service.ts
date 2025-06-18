@@ -83,7 +83,7 @@ export class CategoryService {
     await this.categoryRepository.softDelete({ id });
 
     return {
-      message: '게시물이 삭제되었습니다.',
+      message: '카테고리가 삭제되었습니다.',
     };
   }
 }
