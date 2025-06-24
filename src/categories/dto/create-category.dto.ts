@@ -1,13 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({
+    description: '카테고리 이름',
+    example: 'docker',
+  })
+  @IsNotEmpty({ message: '카테고리 이름은 필수입니다.' })
+  @IsString({ message: '카테고리 이름은 문자열이어야 합니다.' })
   name: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsInt()
-  parentId: number;
+  @ApiProperty({
+    description: '상위 카테고리 ID',
+    example: 1,
+    required: false,
+  })
+  @IsOptional({ message: '상위 카테고리 ID는 선택사항입니다.' })
+  parentId?: number;
 }
