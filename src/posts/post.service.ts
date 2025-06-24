@@ -12,6 +12,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { GetPostsFilterDto } from './dto/get-post-filter.dto';
 
 @Injectable()
 export class PostService {
@@ -26,15 +27,20 @@ export class PostService {
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async get() {
-    const posts = await this.postRepository.find({
-      relations: ['category', 'category.parent', 'category.parent.parent'],
-      order: { createdAt: 'DESC' },
-    });
+  async get(filterDto: GetPostsFilterDto) {
+    const { categoryId } = filterDto;
 
-    return {
-      posts,
-    };
+    const query = this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.category', 'category');
+
+    if (categoryId) {
+      query.andWhere('categoryId = :categoryId', { categoryId });
+    }
+
+    const posts = await query.getMany();
+
+    return { posts };
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {

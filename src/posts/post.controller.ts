@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -20,9 +21,11 @@ import {
   ApiTags,
   ApiResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { PostGetResponseDto } from './type/post-response.dto';
+import { GetPostsFilterDto } from './dto/get-post-filter.dto';
 
 @ApiTags('게시물 API')
 @Controller('post')
@@ -34,9 +37,10 @@ export class PostController {
     description: '게시글 조회 성공',
     type: PostGetResponseDto,
   })
+  @ApiQuery({ name: 'categoryId', required: false, type: Number })
   @Get()
-  get(/* @Query() filter: string */) {
-    return this.postService.get();
+  get(@Query() filterDto: GetPostsFilterDto) {
+    return this.postService.get(filterDto);
   }
 
   @UseGuards(JwtAuthGuard)
