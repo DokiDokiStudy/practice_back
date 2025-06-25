@@ -55,6 +55,6 @@ export class LikeService {
     });
 
     await this.likeRepository.save(newLike);
-    return { message: '좋아요 등록됨', data: newLike.id };
+    return { message: `${reactionType} 등록`, data: { id: newLike.id } };
   }
 }
