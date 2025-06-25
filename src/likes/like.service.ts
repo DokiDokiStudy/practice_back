@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Like } from './entities/like.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Injectable()
 export class LikeService {
-  create(createLikeDto: CreateLikeDto) {
-    return 'This action adds a new like';
-  }
+  constructor(
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
 
-  findAll() {
-    return `This action returns all like`;
-  }
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
-  }
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+  ) {}
 
-  update(id: number, updateLikeDto: UpdateLikeDto) {
-    return `This action updates a #${id} like`;
-  }
+  async commentLike(commentId: number, userId: number) {
+    console.log('userId:', userId);
+    console.log('commentId:', commentId);
+    if (!userId || !commentId) {
+      throw new BadRequestException('유효하지 않은 요청입니다.');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+    const alreadyLiked = await this.likeRepository.findOne({
+      where: { user: { id: userId }, comment: { id: commentId } },
+    });
+
+    if (alreadyLiked) {
+      throw new BadRequestException('이미 좋아요를 누른 댓글입니다.');
+    }
+
+    const like = this.likeRepository.create({
+      user: { id: userId },
+      comment: { id: commentId },
+      reactionType: 'like',
+    });
+    await this.likeRepository.save(like);
+
+    return { message: 'success' };
   }
 }
