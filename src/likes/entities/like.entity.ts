@@ -22,6 +22,6 @@ export class Like {
   @JoinColumn({ name: 'commentId' })
   comment: Comment;
 
-  @Column()
+  @Column({ type: 'enum', enum: ReactionType })
   reactionType: ReactionType;
 }
