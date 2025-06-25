@@ -17,9 +17,9 @@ export class LikeController {
   @UseGuards(JwtAuthGuard)
   @Post(':commentId')
   async commentLike(
-    @Param('commentId', ParseIntPipe) commentId: number,
     @Request() req: AuthRequest,
+    @Param('commentId', ParseIntPipe) commentId: number,
   ) {
-    return await this.likeService.commentLike(commentId, req.user.id);
+    return await this.likeService.commentLike(req.user.id, commentId);
   }
 }

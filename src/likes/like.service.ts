@@ -18,28 +18,34 @@ export class LikeService {
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async commentLike(commentId: number, userId: number) {
-    console.log('userId:', userId);
-    console.log('commentId:', commentId);
+  async commentLike(userId: number, commentId: number) {
+    const existingLike = await this.likeRepository.findOne({
+      where: { user: { id: userId }, comment: { id: commentId } },
+    });
+
+    if (existingLike) {
+      await this.likeRepository.remove(existingLike);
+      return { message: '좋아요 취소됨' };
+    }
+
+    const commentExists = await this.commentRepository.exist({
+      where: { id: commentId },
+    });
+    if (!commentExists) {
+      throw new BadRequestException('존재하지 않는 댓글입니다.');
+    }
+
     if (!userId || !commentId) {
       throw new BadRequestException('유효하지 않은 요청입니다.');
     }
 
-    const alreadyLiked = await this.likeRepository.findOne({
-      where: { user: { id: userId }, comment: { id: commentId } },
-    });
-
-    if (alreadyLiked) {
-      throw new BadRequestException('이미 좋아요를 누른 댓글입니다.');
-    }
-
-    const like = this.likeRepository.create({
+    const newLike = this.likeRepository.create({
       user: { id: userId },
       comment: { id: commentId },
       reactionType: 'like',
     });
-    await this.likeRepository.save(like);
 
-    return { message: 'success' };
+    await this.likeRepository.save(newLike);
+    return { message: '좋아요 등록됨', data: newLike.id };
   }
 }
