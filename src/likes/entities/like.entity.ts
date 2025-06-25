@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ReactionType } from '../type/reactionType';
 
 @Entity()
 export class Like {
@@ -22,5 +23,5 @@ export class Like {
   comment: Comment;
 
   @Column()
-  reactionType: string;
+  reactionType: ReactionType;
 }
