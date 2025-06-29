@@ -10,6 +10,7 @@ import {
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -19,6 +20,7 @@ export class User {
   @Column({ unique: true, length: 255 })
   email: string;
 
+  @Exclude()
   @Column({ length: 255 })
   password: string;
 

@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from './entities/comment.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Like } from 'src/likes/entities/like.entity';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CommentService {
@@ -21,6 +23,8 @@ export class CommentService {
     private readonly postRepository: Repository<Post>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
   ) {}
 
   async create(request: AuthRequest, createCommentDto: CreateCommentDto) {
@@ -66,8 +70,36 @@ export class CommentService {
     return `This action returns all comment`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  async findOne(commentId: number, currentUserId?: number) {
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: ['user'],
+    });
+
+    if (!comment) {
+      throw new NotFoundException('댓글이 존재하지 않습니다.');
+    }
+
+    const likeCount = await this.likeRepository.count({
+      where: { comment: { id: commentId } },
+    });
+
+    const writerIsMe = currentUserId
+      ? await this.likeRepository.exist({
+          where: {
+            comment: { id: commentId },
+            user: { id: currentUserId },
+          },
+        })
+      : false;
+
+    return {
+      data: {
+        comment: instanceToPlain(comment),
+        likeCount,
+        writerIsMe,
+      },
+    };
   }
 
   async update(

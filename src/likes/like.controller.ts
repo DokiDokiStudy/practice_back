@@ -1,42 +1,32 @@
 import {
   Controller,
-  Get,
   Post,
-  Body,
-  Patch,
+  UseGuards,
   Param,
-  Delete,
+  Request,
+  ParseIntPipe,
+  Body,
 } from '@nestjs/common';
 import { LikeService } from './like.service';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { AuthRequest } from 'src/auth/type/jwt';
+import { commentLikeDto } from './dto/comment-like.dto';
 
 @Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
-  @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likeService.create(createLikeDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.likeService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.likeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLikeDto: UpdateLikeDto) {
-    return this.likeService.update(+id, updateLikeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likeService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post(':commentId')
+  async commentLike(
+    @Request() req: AuthRequest,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Body() body: commentLikeDto,
+  ) {
+    return await this.likeService.commentLike(
+      req.user.id,
+      commentId,
+      body.reactionType,
+    );
   }
 }

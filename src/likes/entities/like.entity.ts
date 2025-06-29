@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ReactionType } from '../type/reactionType';
 
 @Entity()
 export class Like {
@@ -21,6 +22,6 @@ export class Like {
   @JoinColumn({ name: 'commentId' })
   comment: Comment;
 
-  @Column()
-  reactionType: string;
+  @Column({ type: 'enum', enum: ReactionType })
+  reactionType: ReactionType;
 }

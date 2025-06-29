@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Like } from './entities/like.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
+import { ReactionType } from './type/reactionType';
 
 @Injectable()
 export class LikeService {
-  create(createLikeDto: CreateLikeDto) {
-    return 'This action adds a new like';
-  }
+  constructor(
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+  ) {}
 
-  findAll() {
-    return `This action returns all like`;
-  }
+  async commentLike(
+    userId: number,
+    commentId: number,
+    reactionType: ReactionType,
+  ) {
+    const existing = await this.likeRepository.findOne({
+      where: { user: { id: userId }, comment: { id: commentId } },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
-  }
+    if (existing) {
+      if (existing.reactionType === reactionType) {
+        await this.likeRepository.remove(existing);
+        return { message: `${reactionType} 취소됨` };
+      } else {
+        existing.reactionType = reactionType;
+        await this.likeRepository.save(existing);
+        return { message: `${reactionType}로 변경됨` };
+      }
+    }
 
-  update(id: number, updateLikeDto: UpdateLikeDto) {
-    return `This action updates a #${id} like`;
-  }
+    const commentExists = await this.commentRepository.exist({
+      where: { id: commentId },
+    });
+    if (!commentExists) {
+      throw new BadRequestException('존재하지 않는 댓글입니다.');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+    if (!userId || !commentId) {
+      throw new BadRequestException('유효하지 않은 요청입니다.');
+    }
+
+    const newLike = this.likeRepository.create({
+      user: { id: userId },
+      comment: { id: commentId },
+      reactionType,
+    });
+
+    await this.likeRepository.save(newLike);
+    return { message: `${reactionType} 등록`, data: { id: newLike.id } };
   }
 }
