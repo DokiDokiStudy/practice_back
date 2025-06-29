@@ -10,7 +10,7 @@ import {
 import { ReactionType } from '../type/reactionType';
 
 @Entity()
-export class Like {
+export class Likes {
   @PrimaryGeneratedColumn()
   id: number;
 

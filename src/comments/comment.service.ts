@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from './entities/comment.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Like } from 'src/likes/entities/like.entity';
+import { Likes } from 'src/likes/entities/likes.entity';
 import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
@@ -23,8 +23,8 @@ export class CommentService {
     private readonly postRepository: Repository<Post>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
-    @InjectRepository(Like)
-    private readonly likeRepository: Repository<Like>,
+    @InjectRepository(Likes)
+    private readonly likeRepository: Repository<Likes>,
   ) {}
 
   async create(request: AuthRequest, createCommentDto: CreateCommentDto) {

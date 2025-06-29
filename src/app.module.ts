@@ -8,7 +8,7 @@ import { JwtStrategy } from './auth/jwt/jwt.strategy';
 import { PostModule } from './posts/post.module';
 import { CategoryModule } from './categories/category.module';
 import { CommentModule } from './comments/comment.module';
-import { LikeModule } from './likes/like.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { LikeModule } from './likes/like.module';
     PostModule,
     CategoryModule,
     CommentModule,
-    LikeModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

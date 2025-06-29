@@ -7,14 +7,14 @@ import {
   ParseIntPipe,
   Body,
 } from '@nestjs/common';
-import { LikeService } from './like.service';
+import { LikesService } from './likes.service';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { commentLikeDto } from './dto/comment-like.dto';
 
 @Controller('like')
-export class LikeController {
-  constructor(private readonly likeService: LikeService) {}
+export class LikesController {
+  constructor(private readonly likesService: LikesService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post(':commentId')
@@ -23,7 +23,7 @@ export class LikeController {
     @Param('commentId', ParseIntPipe) commentId: number,
     @Body() body: commentLikeDto,
   ) {
-    return await this.likeService.commentLike(
+    return await this.likesService.commentLike(
       req.user.id,
       commentId,
       body.reactionType,
