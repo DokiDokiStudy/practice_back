@@ -1,7 +1,7 @@
 ## 초기 카테고리 생성 쿼리
 
 ```bash
-INSERT into nestjs_db.category(name, parentId) values("자유게시판", null)
+docker exec -it nestjs_app npm run
 ```
 
 ## 응답값(ApiResponse) 방식 사용

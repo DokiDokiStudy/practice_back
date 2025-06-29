@@ -7,6 +7,7 @@ import { Post } from 'src/posts/entities/post.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category, Post])],
+  exports: [CategoryService],
   controllers: [CategoryController],
   providers: [CategoryService],
 })
