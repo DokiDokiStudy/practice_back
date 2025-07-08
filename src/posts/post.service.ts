@@ -28,7 +28,7 @@ export class PostService {
   ) {}
 
   async get(filterDto: GetPostsFilterDto) {
-    const { categoryId } = filterDto;
+    const { categoryId, page = 1, limit = 10 } = filterDto;
 
     const query = this.postRepository
       .createQueryBuilder('post')
@@ -38,9 +38,15 @@ export class PostService {
       query.andWhere('categoryId = :categoryId', { categoryId });
     }
 
-    const posts = await query.getMany();
+    query.orderBy('post.createdAt', 'DESC');
+    query.skip((page - 1) * limit).take(limit);
 
-    return { posts };
+    const [posts, total] = await query.getManyAndCount();
+
+    return {
+      data: posts,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {

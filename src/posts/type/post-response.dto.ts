@@ -73,7 +73,24 @@ export class PostGetResponseDto {
       },
     ],
   })
-  posts: PostGetResponseData;
+  data: { posts: PostGetResponseData };
+  @ApiProperty({
+    type: PostGetResponseData,
+    isArray: true,
+    description: '게시글 목록',
+    example: {
+      limit: 10,
+      page: 1,
+      total: 10,
+      totalPages: 1,
+    },
+  })
+  meta: {
+    limit: number;
+    page: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export class PostPostResponseDto {

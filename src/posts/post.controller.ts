@@ -37,7 +37,24 @@ export class PostController {
     description: '게시글 조회 성공',
     type: PostGetResponseDto,
   })
-  @ApiQuery({ name: 'categoryId', required: false, type: Number })
+  @ApiQuery({
+    name: 'categoryId',
+    required: false,
+    type: Number,
+    description: '게시판 종류',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: '페이지 번호',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: '페이지 당 게시글 수',
+  })
   @Get()
   get(@Query() filterDto: GetPostsFilterDto) {
     return this.postService.get(filterDto);
