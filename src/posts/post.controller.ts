@@ -97,6 +97,8 @@ export class PostController {
         title: { type: 'string', example: '게시물 제목' },
         author: { type: 'string', example: '작성자' },
         content: { type: 'string', example: '게시물 내용' },
+        likes: { type: 'array', example: [{}] },
+        likeCounts: { type: 'number', example: 1 },
         commentsCount: { type: 'number', example: 1 },
         comments: {
           type: 'array',

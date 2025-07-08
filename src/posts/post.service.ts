@@ -114,7 +114,7 @@ export class PostService {
   async findOne(id: number) {
     const post = await this.postRepository.findOne({
       where: { id },
-      relations: ['comments', 'comments.children'],
+      relations: ['comments', 'comments.children', 'likes'],
     });
 
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
@@ -133,6 +133,8 @@ export class PostService {
       title: post.title,
       author: post.author,
       content: post.content,
+      likes: post.likes,
+      likeCount: post.likes.length,
       commentsCount: parentComments.length || [],
       comments: parentComments.map(childrenComments),
     };
