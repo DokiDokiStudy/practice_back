@@ -114,4 +114,44 @@ export class UsersService {
       message: '탈퇴에 성공하였습니다.',
     };
   }
+
+  async findAdminUser() {
+    const adminUser = await this.userRepository.findOneBy({
+      role: 'admin',
+    });
+    return adminUser;
+  }
+
+  async createAdminUser(createUserDto: CreateUserDto) {
+    const existingEmail = await this.userRepository.findOneBy({
+      email: createUserDto.email,
+    });
+    if (existingEmail) {
+      throw new BadRequestException({
+        message: '이미 존재하는 이메일입니다.',
+        errorCode: 'USER_ALREADY_EXISTS',
+      });
+    }
+
+    const hashedPassword = await argon2.hash(createUserDto.password);
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+      role: 'admin',
+      isActive: true,
+    });
+    const createdUser = await this.userRepository.save(user);
+
+    return {
+      message: '관리자 계정 생성에 성공하였습니다.',
+      data: {
+        id: createdUser.id,
+        email: createdUser.email,
+        nickName: createdUser.nickName,
+        role: createdUser.role,
+        createdAt: createdUser.createdAt,
+      },
+    };
+  }
 }
