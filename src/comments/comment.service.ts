@@ -54,7 +54,7 @@ export class CommentService {
       });
 
       return {
-        statusCode: 201,
+        statusCode: 200,
         message: '댓글이 등록되었습니다.',
       };
     } catch (error) {

@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -74,9 +75,9 @@ export class PostService {
       };
     } catch (error) {
       console.error(error);
-      return {
-        message: '게시물 생성에 실패했습니다.',
-      };
+      throw error instanceof NotFoundException
+        ? error
+        : new InternalServerErrorException('게시물 생성에 실패했습니다.');
     }
   }
 
@@ -133,7 +134,7 @@ export class PostService {
       title: post.title,
       author: post.author,
       content: post.content,
-      likes: post.likes,
+      // likes: post.likes,
       likeCount: post.likes.length,
       commentsCount: parentComments.length || [],
       comments: parentComments.map(childrenComments),
