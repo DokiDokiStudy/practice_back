@@ -8,6 +8,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { createApiResponse } from 'src/util/create-api-response';
 
 @Injectable()
 export class CategoryService {
@@ -36,15 +37,12 @@ export class CategoryService {
         parent: parentCategory ?? undefined,
       });
 
-      return {
-        message: '카테고리 생성에 성공하였습니다.',
+      return createApiResponse(200, '카테고리 생성에 성공하였습니다.', {
         name: category.name,
-      };
+      });
     } catch (error) {
       console.error(error);
-      return {
-        message: '카테고리 생성에 실패했습니다.',
-      };
+      return createApiResponse(500, '카테고리 생성에 실패했습니다.');
     }
   }
 
@@ -80,20 +78,16 @@ export class CategoryService {
         children: category.children?.map(childrenCategories) || [],
       });
 
-      return {
-        message: '카테고리 조회에 성공했습니다.',
-        statusCode: 200,
+      return createApiResponse(200, '카테고리 조회에 성공했습니다.', {
         categories: parentCategories.map(childrenCategories),
-      };
+      });
     } catch (error) {
       console.error(error);
-      return {
-        message: '카테고리 조회에 실패했습니다.',
-      };
+      return createApiResponse(500, '카테고리 조회에 실패했습니다.');
     }
   }
 
-  //TODOS: 하위 카테고리가 남아있을경우? 다 삭제?
+  // TODOS: 하위 카테고리가 남아있을경우? 다 삭제?
   async remove(id: number) {
     const category = await this.categoryRepository.findOne({
       where: { id },

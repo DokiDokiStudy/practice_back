@@ -13,9 +13,8 @@ export const ApiSuccessResponse = <T extends Type<any>>(
   };
 
   if (model) {
-    console.log(getSchemaPath(model));
-
     schema.properties.data = {
+      type: 'object',
       $ref: getSchemaPath(model),
     };
   }
