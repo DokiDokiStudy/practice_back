@@ -13,6 +13,7 @@ import { Comment } from './entities/comment.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Likes } from 'src/likes/entities/likes.entity';
 import { instanceToPlain } from 'class-transformer';
+import { createApiResponse } from 'src/common/create-api-response';
 
 @Injectable()
 export class CommentService {
@@ -53,16 +54,10 @@ export class CommentService {
         content,
       });
 
-      return {
-        statusCode: 200,
-        message: '댓글이 등록되었습니다.',
-      };
+      return createApiResponse(200, '댓글이 등록되었습니다.');
     } catch (error) {
       console.error(error);
-      return {
-        statusCode: 500,
-        message: '댓글 등록에 실패했습니다.',
-      };
+      return createApiResponse(500, '댓글 등록에 실패했습니다.');
     }
   }
 
@@ -93,13 +88,11 @@ export class CommentService {
         })
       : false;
 
-    return {
-      data: {
-        comment: instanceToPlain(comment),
-        likeCount,
-        writerIsMe,
-      },
-    };
+    return createApiResponse(200, '댓글 단일 조회에 성공하였습니다.', {
+      comment: instanceToPlain(comment),
+      likeCount,
+      writerIsMe,
+    });
   }
 
   async update(
@@ -125,16 +118,10 @@ export class CommentService {
       const updatedComment = Object.assign(comment, updateCommentDto);
       await this.commentRepository.save(updatedComment);
 
-      return {
-        statusCode: 200,
-        message: '댓글이 수정되었습니다.',
-      };
+      return createApiResponse(200, '댓글이 수정되었습니다.');
     } catch (error) {
       console.error(error);
-      return {
-        statusCode: 500,
-        message: '댓글 수정에 실패했습니다.',
-      };
+      return createApiResponse(500, '댓글 수정에 실패하였습니다.');
     }
   }
 

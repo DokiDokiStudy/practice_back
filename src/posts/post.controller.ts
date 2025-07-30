@@ -16,16 +16,17 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthRequest } from 'src/auth/type/jwt';
 import {
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { PostGetResponseDto } from './type/post-response.dto';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
+import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
 
 @ApiTags('게시물 API')
 @Controller('posts')
@@ -33,10 +34,8 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @ApiOperation({ summary: '모든 게시물 조회' })
-  @ApiOkResponse({
-    description: '게시글 조회 성공',
-    type: PostGetResponseDto,
-  })
+  @ApiExtraModels(PostGetResponseDto) // DTO 명시적 등록
+  @ApiSuccessResponse('게시글 조회 성공', PostGetResponseDto)
   @ApiQuery({
     name: 'categoryId',
     required: false,

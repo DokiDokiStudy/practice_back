@@ -9,28 +9,28 @@ import {
   UseGuards,
   Request,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthRequest } from 'src/auth/type/jwt';
-import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CommentCreateResponseDto } from './type/comment-response.dto';
-
+import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
+import { CommentGetResponseDto } from './type/comment-response.dto';
+@ApiTags('댓글 API')
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '댓글 생성',
   })
-  @ApiOkResponse({
-    description: '댓글 생성 성공',
-    type: CommentCreateResponseDto,
-  })
   @Post()
+  @HttpCode(200)
+  @ApiSuccessResponse('댓글 생성에 성공하였습니다.')
   create(
     @Request() request: AuthRequest,
     @Body() createCommentDto: CreateCommentDto,
@@ -44,10 +44,12 @@ export class CommentController {
   //   return this.commentService.findAll();
   // }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '댓글 단일 조회(ID)',
   })
+  @ApiExtraModels(CommentGetResponseDto)
+  @ApiSuccessResponse('댓글 조회에 성공하였습니다.', CommentGetResponseDto)
   @Get(':commentId')
   async findOne(
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -56,11 +58,13 @@ export class CommentController {
     return this.commentService.findOne(commentId, req.user.id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '댓글 수정',
   })
   @Patch(':commentId')
+  @HttpCode(200)
+  @ApiSuccessResponse('댓글 수정에 성공하였습니다.')
   update(
     @Request() request: AuthRequest,
     @Param('commentId') commentId: string,
@@ -69,20 +73,11 @@ export class CommentController {
     return this.commentService.update(request, +commentId, updateCommentDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '댓글 삭제',
   })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: '댓글이 삭제되었습니다.' },
-      },
-    },
-  })
+  @ApiSuccessResponse('댓글 삭제에 성공하였습니다.')
   @Delete(':commentId')
   remove(
     @Request() request: AuthRequest,

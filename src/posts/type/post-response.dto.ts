@@ -42,12 +42,6 @@ export class PostGetResponseData {
 }
 
 export class PostGetResponseDto {
-  @ApiProperty({ example: '게시글 조회에 성공하였습니다.' })
-  message: string;
-
-  @ApiProperty({ example: 200 })
-  statusCode: string;
-
   @ApiProperty({
     type: PostGetResponseData,
     isArray: true,
@@ -73,7 +67,8 @@ export class PostGetResponseDto {
       },
     ],
   })
-  data: { posts: PostGetResponseData };
+  posts: PostGetResponseData;
+
   @ApiProperty({
     type: PostGetResponseData,
     isArray: true,

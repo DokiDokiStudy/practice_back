@@ -34,8 +34,8 @@ export class CategoryController {
     summary: '카테고리 생성 - 백엔드 전용',
     description: '새로운 카테고리를 생성합니다.',
   })
-  @HttpCode(200)
   @Post()
+  @HttpCode(200)
   @ApiExtraModels(CategoryCreateResponseDto) // DTO 명시적 등록
   @ApiSuccessResponse(
     '카테고리 생성에 성공하였습니다.',
@@ -47,7 +47,6 @@ export class CategoryController {
 
   // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '카테고리 조회' })
-  @HttpCode(200)
   @ApiExtraModels(CategoryGetAllResponseDto) // DTO 명시적 등록
   @Get()
   @ApiSuccessResponse(

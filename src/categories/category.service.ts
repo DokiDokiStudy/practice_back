@@ -8,7 +8,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { createApiResponse } from 'src/util/create-api-response';
+import { createApiResponse } from 'src/common/create-api-response';
 
 @Injectable()
 export class CategoryService {

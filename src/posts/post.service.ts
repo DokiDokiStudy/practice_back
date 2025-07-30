@@ -14,6 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
+import { createApiResponse } from 'src/common/create-api-response';
 
 @Injectable()
 export class PostService {
@@ -44,10 +45,10 @@ export class PostService {
 
     const [posts, total] = await query.getManyAndCount();
 
-    return {
-      data: posts,
+    return createApiResponse(200, '게시글 조회에 성공하였습니다.', {
+      posts,
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    };
+    });
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {
@@ -129,7 +130,7 @@ export class PostService {
       children: (comment.children ?? []).map(childrenComments),
     });
 
-    return {
+    return createApiResponse(200, '단일 게시글 조회에 성공하였습니다.', {
       id: post.id,
       title: post.title,
       author: post.author,
@@ -138,7 +139,7 @@ export class PostService {
       likeCount: post.likes.length,
       commentsCount: parentComments.length || [],
       comments: parentComments.map(childrenComments),
-    };
+    });
   }
 
   async update(request: AuthRequest, id: number, updatePostDto: UpdatePostDto) {

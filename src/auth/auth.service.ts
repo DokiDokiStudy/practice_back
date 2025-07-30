@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './type/jwt';
+import { createApiResponse } from 'src/common/create-api-response';
 
 @Injectable()
 export class AuthService {
@@ -26,23 +27,25 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+    try {
+      const user = await this.validateUser(loginDto.email, loginDto.password);
 
-    const payload: JwtPayload = {
-      id: user.id,
-      email: user.email,
-      nickName: user.nickName,
-    };
-    const token = this.jwtService.sign(payload);
+      const payload: JwtPayload = {
+        id: user.id,
+        email: user.email,
+        nickName: user.nickName,
+      };
+      const token = this.jwtService.sign(payload);
 
-    return {
-      message: '로그인에 성공하였습니다.',
-      data: {
+      return createApiResponse(200, '로그인에 성공하였습니다.', {
         email: user.email,
         nickName: user.nickName,
         role: user.role,
         token,
-      },
-    };
+      });
+    } catch (error) {
+      console.error(error);
+      return createApiResponse(500, '로그인에 실패하였습니다.');
+    }
   }
 }
