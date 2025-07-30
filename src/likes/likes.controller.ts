@@ -12,7 +12,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { AuthRequest } from 'src/auth/type/jwt';
 import { CommonLikeDto } from './dto/common-like.dto';
 
-@Controller('like')
+@Controller('likes')
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 

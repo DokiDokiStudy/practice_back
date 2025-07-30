@@ -28,7 +28,7 @@ import { PostGetResponseDto } from './type/post-response.dto';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
 
 @ApiTags('게시물 API')
-@Controller('post')
+@Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 

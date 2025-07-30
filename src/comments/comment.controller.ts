@@ -18,7 +18,7 @@ import { AuthRequest } from 'src/auth/type/jwt';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CommentCreateResponseDto } from './type/comment-response.dto';
 
-@Controller('comment')
+@Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
