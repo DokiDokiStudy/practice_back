@@ -14,6 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Likes } from 'src/likes/entities/likes.entity';
 import { instanceToPlain } from 'class-transformer';
 import { createApiResponse } from 'src/common/create-api-response';
+import { CommentGetResponseDto } from './type/comment-response.dto';
 
 @Injectable()
 export class CommentService {
@@ -88,11 +89,16 @@ export class CommentService {
         })
       : false;
 
-    return createApiResponse(200, '댓글 단일 조회에 성공하였습니다.', {
-      comment: instanceToPlain(comment),
-      likeCount,
-      writerIsMe,
-    });
+    return createApiResponse(
+      200,
+      '댓글 단일 조회에 성공하였습니다.',
+      {
+        comment: instanceToPlain(comment),
+        likeCount,
+        writerIsMe,
+      },
+      CommentGetResponseDto,
+    );
   }
 
   async update(

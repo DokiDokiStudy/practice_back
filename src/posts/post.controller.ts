@@ -18,7 +18,6 @@ import { AuthRequest } from 'src/auth/type/jwt';
 import {
   ApiOperation,
   ApiTags,
-  ApiResponse,
   ApiParam,
   ApiQuery,
   ApiExtraModels,
@@ -27,6 +26,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { PostGetResponseDto } from './type/post-response.dto';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
 import { ApiSuccessResponse } from 'src/common/decorators/api-response.decorator';
+import { PostDetailResponseDto } from './type/post-detail-response.dto';
 
 @ApiTags('게시물 API')
 @Controller('posts')
@@ -64,15 +64,7 @@ export class PostController {
   @ApiOperation({
     summary: '게시물 생성',
   })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: '게시물이 생성되었습니다.' },
-      },
-    },
-  })
+  @ApiSuccessResponse('게시물이 생성되었습니다.')
   @Post()
   create(@Request() reqest: AuthRequest, @Body() createPostDto: CreatePostDto) {
     return this.postService.create(reqest, createPostDto);
@@ -87,44 +79,10 @@ export class PostController {
     description: '게시물 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 1 },
-        title: { type: 'string', example: '게시물 제목' },
-        author: { type: 'string', example: '작성자' },
-        content: { type: 'string', example: '게시물 내용' },
-        likes: { type: 'array', example: [{}] },
-        likeCounts: { type: 'number', example: 1 },
-        commentsCount: { type: 'number', example: 1 },
-        comments: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number', example: 1 },
-              content: { type: 'string', example: '댓글 내용' },
-              childrenCount: { type: 'number', example: 1 },
-              children: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number', example: 2 },
-                    content: { type: 'string', example: '대댓글 내용' },
-                    childrenCount: { type: 'number', example: 0 },
-                    children: { type: 'array' },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
+  @ApiSuccessResponse(
+    '게시물 단일 조회에 성공하였습니다.',
+    PostDetailResponseDto,
+  )
   findOne(@Param('id') id: string) {
     return this.postService.findOne(+id);
   }
@@ -140,15 +98,7 @@ export class PostController {
     description: '게시물 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: '게시물이 수정되었습니다.' },
-      },
-    },
-  })
+  @ApiSuccessResponse('게시물이 수정되었습니다.')
   update(
     @Request() request: AuthRequest,
     @Param('id') id: string,
@@ -168,15 +118,7 @@ export class PostController {
     description: '게시물 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: '게시물이 삭제되었습니다.' },
-      },
-    },
-  })
+  @ApiSuccessResponse('게시물이 삭제되었습니다.')
   delete(@Request() request: AuthRequest, @Param('id') id: string) {
     return this.postService.delete(request, +id);
   }

@@ -15,6 +15,15 @@ import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
 import { createApiResponse } from 'src/common/create-api-response';
+import {
+  PostGetResponseData,
+  PostGetResponseDto,
+} from './type/post-response.dto';
+import { plainToInstance } from 'class-transformer';
+import {
+  CommentDetailDto,
+  PostDetailResponseDto,
+} from './type/post-detail-response.dto';
 
 @Injectable()
 export class PostService {
@@ -45,10 +54,21 @@ export class PostService {
 
     const [posts, total] = await query.getManyAndCount();
 
-    return createApiResponse(200, '게시글 조회에 성공하였습니다.', {
-      posts,
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    });
+    const transformedPosts = posts.map((post) =>
+      plainToInstance(PostGetResponseData, post, {
+        excludeExtraneousValues: true, // Ensures only decorated properties are included
+      }),
+    );
+
+    return createApiResponse(
+      200,
+      '게시글 조회에 성공하였습니다.',
+      {
+        posts: transformedPosts,
+        meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      },
+      PostGetResponseDto,
+    );
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {
@@ -70,10 +90,7 @@ export class PostService {
         content,
       });
 
-      return {
-        statusCode: 200,
-        message: '게시물이 생성되었습니다.',
-      };
+      return createApiResponse(200, '게시물이 생성되었습니다.');
     } catch (error) {
       console.error(error);
       throw error instanceof NotFoundException
@@ -123,23 +140,32 @@ export class PostService {
 
     const parentComments = post.comments.filter((comment) => !comment.parent);
 
-    const childrenComments = (comment: Comment): any => ({
+    const childrenComments = (comment: Comment): CommentDetailDto => ({
       id: comment.id,
       content: comment.content,
       childrenCount: comment.children?.length ?? 0,
       children: (comment.children ?? []).map(childrenComments),
     });
 
-    return createApiResponse(200, '단일 게시글 조회에 성공하였습니다.', {
-      id: post.id,
-      title: post.title,
-      author: post.author,
-      content: post.content,
-      // likes: post.likes,
-      likeCount: post.likes.length,
-      commentsCount: parentComments.length || [],
-      comments: parentComments.map(childrenComments),
-    });
+    const commentsCount = parentComments.reduce((acc, cur) => {
+      return acc + (cur.children?.length || 0) + 1; // +1 for the parent comment itself
+    }, 0);
+
+    return createApiResponse(
+      200,
+      '단일 게시글 조회에 성공하였습니다.',
+      {
+        id: post.id,
+        title: post.title,
+        author: post.author,
+        content: post.content,
+        // likes: post.likes,
+        likeCounts: post.likes.length,
+        commentsCount: commentsCount,
+        comments: parentComments.map(childrenComments),
+      },
+      PostDetailResponseDto,
+    );
   }
 
   async update(request: AuthRequest, id: number, updatePostDto: UpdatePostDto) {
@@ -160,9 +186,7 @@ export class PostService {
     const updatedPost = Object.assign(post, updatePostDto);
     await this.postRepository.save(updatedPost);
 
-    return {
-      message: '게시물이 수정되었습니다.',
-    };
+    return createApiResponse(200, '게시물이 수정되었습니다.');
   }
 
   async delete(request: AuthRequest, id: number) {
@@ -182,8 +206,6 @@ export class PostService {
 
     await this.postRepository.softDelete({ id });
 
-    return {
-      message: '게시물이 삭제되었습니다.',
-    };
+    return createApiResponse(200, '게시물이 삭제되었습니다.');
   }
 }

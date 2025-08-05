@@ -1,10 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class PostGetResponseData {
   @ApiProperty({ example: 1 })
+  @Expose()
   id: string;
 
   @ApiProperty({ example: 1 })
+  @Expose()
   userId: string;
 
   @ApiProperty({
@@ -17,27 +20,35 @@ export class PostGetResponseData {
       deletedAt: null,
     },
   })
+  @Expose()
   category: object;
 
   @ApiProperty({ example: 1 })
+  @Expose()
   categoryId: number;
 
   @ApiProperty({ example: 'title' })
+  @Expose()
   title: string;
 
   @ApiProperty({ example: 'author' })
+  @Expose()
   author: string;
 
   @ApiProperty({ example: 'content' })
+  @Expose()
   content: string;
 
   @ApiProperty({ example: '2025-06-17T15:50:10.834Z' })
+  @Expose()
   createdAt: string;
 
   @ApiProperty({ example: '2025-06-17T15:50:10.834Z' })
+  @Expose()
   updatedAt: string;
 
   @ApiProperty({ example: '2025-06-17T15:50:10.834Z' })
+  @Expose()
   deletedAt: string | null;
 }
 
@@ -67,12 +78,12 @@ export class PostGetResponseDto {
       },
     ],
   })
-  posts: PostGetResponseData;
+  posts: PostGetResponseData[];
 
   @ApiProperty({
     type: PostGetResponseData,
     isArray: true,
-    description: '게시글 목록',
+    description: '페이지네이션 정보',
     example: {
       limit: 10,
       page: 1,

@@ -9,6 +9,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { createApiResponse } from 'src/common/create-api-response';
+import {
+  CategoryCreateResponseDto,
+  CategoryGetAllResponseDto,
+} from './type/category-response.dto';
 
 @Injectable()
 export class CategoryService {
@@ -37,9 +41,14 @@ export class CategoryService {
         parent: parentCategory ?? undefined,
       });
 
-      return createApiResponse(200, '카테고리 생성에 성공하였습니다.', {
-        name: category.name,
-      });
+      return createApiResponse(
+        200,
+        '카테고리 생성에 성공하였습니다.',
+        {
+          name: category.name,
+        },
+        CategoryCreateResponseDto,
+      );
     } catch (error) {
       console.error(error);
       return createApiResponse(500, '카테고리 생성에 실패했습니다.');
@@ -78,9 +87,14 @@ export class CategoryService {
         children: category.children?.map(childrenCategories) || [],
       });
 
-      return createApiResponse(200, '카테고리 조회에 성공했습니다.', {
-        categories: parentCategories.map(childrenCategories),
-      });
+      return createApiResponse(
+        200,
+        '카테고리 조회에 성공했습니다.',
+        {
+          categories: parentCategories.map(childrenCategories),
+        },
+        CategoryGetAllResponseDto,
+      );
     } catch (error) {
       console.error(error);
       return createApiResponse(500, '카테고리 조회에 실패했습니다.');
