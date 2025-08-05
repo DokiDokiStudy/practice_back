@@ -1,4 +1,4 @@
-import { Like } from 'src/likes/entities/like.entity';
+import { Likes } from 'src/likes/entities/likes.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -52,6 +52,6 @@ export class Comment {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToMany(() => Like, (like: Like) => like.comment, { nullable: true })
-  likes: Like[];
+  @OneToMany(() => Likes, (like: Likes) => like.comment, { nullable: true })
+  likes: Likes[];
 }

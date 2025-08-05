@@ -42,12 +42,6 @@ export class PostGetResponseData {
 }
 
 export class PostGetResponseDto {
-  @ApiProperty({ example: '게시글 조회에 성공하였습니다.' })
-  message: string;
-
-  @ApiProperty({ example: 200 })
-  statusCode: string;
-
   @ApiProperty({
     type: PostGetResponseData,
     isArray: true,
@@ -74,6 +68,24 @@ export class PostGetResponseDto {
     ],
   })
   posts: PostGetResponseData;
+
+  @ApiProperty({
+    type: PostGetResponseData,
+    isArray: true,
+    description: '게시글 목록',
+    example: {
+      limit: 10,
+      page: 1,
+      total: 10,
+      totalPages: 1,
+    },
+  })
+  meta: {
+    limit: number;
+    page: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export class PostPostResponseDto {

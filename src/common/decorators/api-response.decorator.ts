@@ -4,6 +4,7 @@ import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 export const ApiSuccessResponse = <T extends Type<any>>(
   message: string,
   model?: T,
+  meta?: string,
 ) => {
   const schema: { properties: Record<string, object> } = {
     properties: {
@@ -13,10 +14,16 @@ export const ApiSuccessResponse = <T extends Type<any>>(
   };
 
   if (model) {
-    console.log(getSchemaPath(model));
-
     schema.properties.data = {
+      type: 'object',
       $ref: getSchemaPath(model),
+    };
+  }
+
+  if (meta) {
+    schema.properties.data = {
+      type: 'object',
+      $ref: getSchemaPath(meta),
     };
   }
 

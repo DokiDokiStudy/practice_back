@@ -9,6 +9,11 @@ docker exec -it nestjs_app npm run
 대부분의 응답은 응답Dto(ApiOkResponse) 설계후 사용 권고,
 에러메세지와같이 굳이 Dto가 필요없다고 생각될때에만 ApiResponse이용
 
+## like table
+
+like가 예약어여서 테이블 마이그레이션 관련된 오류가 있는 것 같음 방법을 찾아봐야할 것 같음
+임시 조치로 like -> likes 수정
+
 ```bash
 @ApiOkResponse({ description: '성공', type: LoginResponseDto })
 @ApiResponse(

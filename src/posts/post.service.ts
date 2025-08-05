@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { GetPostsFilterDto } from './dto/get-post-filter.dto';
+import { createApiResponse } from 'src/common/create-api-response';
 
 @Injectable()
 export class PostService {
@@ -28,7 +30,7 @@ export class PostService {
   ) {}
 
   async get(filterDto: GetPostsFilterDto) {
-    const { categoryId } = filterDto;
+    const { categoryId, page = 1, limit = 10 } = filterDto;
 
     const query = this.postRepository
       .createQueryBuilder('post')
@@ -38,9 +40,15 @@ export class PostService {
       query.andWhere('categoryId = :categoryId', { categoryId });
     }
 
-    const posts = await query.getMany();
+    query.orderBy('post.createdAt', 'DESC');
+    query.skip((page - 1) * limit).take(limit);
 
-    return { posts };
+    const [posts, total] = await query.getManyAndCount();
+
+    return createApiResponse(200, '게시글 조회에 성공하였습니다.', {
+      posts,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
   }
 
   async create(request: AuthRequest, createPostDto: CreatePostDto) {
@@ -68,9 +76,9 @@ export class PostService {
       };
     } catch (error) {
       console.error(error);
-      return {
-        message: '게시물 생성에 실패했습니다.',
-      };
+      throw error instanceof NotFoundException
+        ? error
+        : new InternalServerErrorException('게시물 생성에 실패했습니다.');
     }
   }
 
@@ -108,7 +116,7 @@ export class PostService {
   async findOne(id: number) {
     const post = await this.postRepository.findOne({
       where: { id },
-      relations: ['comments', 'comments.children'],
+      relations: ['comments', 'comments.children', 'likes'],
     });
 
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
@@ -122,14 +130,16 @@ export class PostService {
       children: (comment.children ?? []).map(childrenComments),
     });
 
-    return {
+    return createApiResponse(200, '단일 게시글 조회에 성공하였습니다.', {
       id: post.id,
       title: post.title,
       author: post.author,
       content: post.content,
+      // likes: post.likes,
+      likeCount: post.likes.length,
       commentsCount: parentComments.length || [],
       comments: parentComments.map(childrenComments),
-    };
+    });
   }
 
   async update(request: AuthRequest, id: number, updatePostDto: UpdatePostDto) {
