@@ -30,7 +30,7 @@ export class Category {
     nullable: true,
     onDelete: 'SET NULL',
   })
-  parent: Category;
+  parent: Category | null;
 
   @ApiProperty({
     description: '하위 카테고리 목록',
