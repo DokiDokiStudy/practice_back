@@ -19,6 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "init": "ts-node -r tsconfig-paths/register src/database/init/init-data.ts",
+    "seed:up": "ts-node -r tsconfig-paths/register src/database/init/seed-up.ts",
+    "seed:down": "ts-node -r tsconfig-paths/register src/database/init/seed-down.ts",
     "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate src/database/migrations/AutoMigration -d src/database/data-source.ts",
     "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create src/database/migrations/ManualEdit -d src/database/data-source.ts",
     "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/database/data-source.ts",
@@ -42,7 +44,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.21"
+    "typeorm": "^0.3.21",
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -72,7 +75,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "gray-matter": "^4.0.3"
   },
   "jest": {
     "moduleFileExtensions": [
