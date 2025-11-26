@@ -10,6 +10,7 @@ import {
   OneToMany,
   RelationId,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
@@ -24,6 +25,7 @@ export class Post {
   @JoinColumn({ name: 'userId' })
   user: User;
 
+  @Exclude()
   @RelationId((post: Post) => post.user)
   userId: number;
 
@@ -31,6 +33,7 @@ export class Post {
   @JoinColumn({ name: 'categoryId' })
   category: Category;
 
+  @Exclude()
   @RelationId((post: Post) => post.category)
   categoryId: number;
 

@@ -17,6 +17,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column({ unique: true, length: 255 })
   email: string;
 
@@ -30,18 +31,22 @@ export class User {
   @Column({ length: 255 })
   nickName: string;
 
+  @Exclude()
   @Column({ default: true })
   isActive: boolean;
 
   @Column({ length: 255 })
   role: string;
 
+  @Exclude()
   @CreateDateColumn()
   createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Exclude()
   @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
 

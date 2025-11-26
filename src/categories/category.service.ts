@@ -7,18 +7,22 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 // import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { Post } from 'src/posts/entities/post.entity';
+import { Repository, In } from 'typeorm';
 import { createApiResponse } from 'src/common/create-api-response';
 import {
   CategoryCreateResponseDto,
   CategoryGetAllResponseDto,
 } from './type/category-response.dto';
+import { plainToInstance, instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
@@ -87,12 +91,16 @@ export class CategoryService {
         children: category.children?.map(childrenCategories) || [],
       });
 
+      const result = {
+        categories: parentCategories.map(childrenCategories),
+      };
+
+      const dto = plainToInstance(CategoryGetAllResponseDto, result);
+
       return createApiResponse(
         200,
         '카테고리 조회에 성공했습니다.',
-        {
-          categories: parentCategories.map(childrenCategories),
-        },
+        dto,
         CategoryGetAllResponseDto,
       );
     } catch (error) {
@@ -114,5 +122,51 @@ export class CategoryService {
     return {
       message: '카테고리가 삭제되었습니다.',
     };
+  }
+
+  async findPostsByCategory(categoryId: number) {
+    const ids = await this.getAllDescendantCategoryIds(categoryId);
+
+    const posts = await this.postRepository.find({
+      where: { category: { id: In(ids) } },
+      relations: ['user', 'category'],
+      order: { createdAt: 'DESC' },
+    });
+
+    // 1. 엔티티 → 클래스 인스턴스
+    const safePlain = plainToInstance(Post, posts);
+
+    return createApiResponse(
+      200,
+      '카테고리별 게시글 조회 성공',
+      { posts: safePlain },
+    );
+  }
+
+  async getAllDescendantCategoryIds(categoryId: number): Promise<number[]> {
+    const categories = await this.categoryRepository.find();
+
+    const childrenMap = new Map<number, Category[]>();
+
+    categories.forEach(cat => {
+      const key = cat.parentId ?? 0;
+      if (!childrenMap.has(key)) {
+        childrenMap.set(key, []);
+      }
+      childrenMap.get(key)!.push(cat);
+    });
+
+    const result: number[] = [];
+
+    const dfs = (id: number) => {
+      result.push(id);
+
+      const childList = childrenMap.get(id) || [];
+      childList.forEach(child => dfs(child.id));
+    };
+
+    dfs(categoryId);
+
+    return result;
   }
 }

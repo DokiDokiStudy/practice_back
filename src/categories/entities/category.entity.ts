@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  RelationId,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -55,6 +56,9 @@ export class Category {
   })
   @Column()
   name: string;
+
+  @RelationId((category: Category) => category.parent)
+  parentId: number | null;
 
   @ApiProperty({
     description: '생성일시',
