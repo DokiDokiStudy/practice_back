@@ -13,13 +13,9 @@ export function createApiResponse<T>(
   if (data && dtoClass) {
     transformedData = plainToInstance(dtoClass, data);
 
-    const errors = validateSync(transformedData as object);
-    if (errors.length > 0) {
-      throw new Error(
-        `Validation failed: ${errors
-          .map((err) => Object.values(err.constraints || {}).join(', '))
-          .join('; ')}`,
-      );
+    // ISSUE #20: Class-validator 검증 로직으로 인한 API 응답 문제 해결
+    if (data && dtoClass) {
+      transformedData = plainToInstance(dtoClass, data);
     }
   }
 
