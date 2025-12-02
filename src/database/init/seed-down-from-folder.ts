@@ -166,10 +166,8 @@ async function deletePostsFromFolderStructure(
           console.log(`⚠️ No frontmatter or parsing failed`);
         }
 
-        const finalCategoryPath =
-          Array.isArray(meta.categoryPath) && meta.categoryPath.length > 0
-            ? meta.categoryPath
-            : categoryPath;
+        // 카테고리 경로 결정: 폴더 구조만 사용 (frontmatter의 categoryPath는 무시)
+        const finalCategoryPath = categoryPath;
 
         console.log(
           `🗂️ Final category path: [${finalCategoryPath.join(' > ')}]`,

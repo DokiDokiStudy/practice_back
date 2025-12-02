@@ -218,7 +218,7 @@ async function seedFromFolderStructure(
 
   const cache = new CategoryCache(catRepo);
 
-  const walk = async (dir: string, categoryPath: string[]) => {
+  const walk = async (dir: string, categoryPath: string[], depth: number) => {
     let entries: import('fs').Dirent[];
     try {
       entries = await fs.readdir(dir, { withFileTypes: true });
@@ -233,8 +233,8 @@ async function seedFromFolderStructure(
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        // 하위 디렉토리 재귀 처리
-        await walk(fullPath, [...categoryPath, entry.name]);
+        // 모든 폴더를 카테고리로 인식
+        await walk(fullPath, [...categoryPath, entry.name], depth + 1);
         continue;
       }
 
@@ -254,11 +254,8 @@ async function seedFromFolderStructure(
           // frontmatter 파싱 실패시 원본 내용 사용
         }
 
-        // 카테고리 경로 결정: meta에서 지정되었으면 그것 사용, 아니면 폴더 구조 사용
-        const finalCategoryPath =
-          Array.isArray(meta.categoryPath) && meta.categoryPath.length > 0
-            ? meta.categoryPath
-            : categoryPath;
+        // 카테고리 경로 결정: 폴더 구조를 우선 사용 (md frontmatter의 categoryPath는 무시)
+        const finalCategoryPath = categoryPath;
 
         if (finalCategoryPath.length === 0) continue; // 루트에 직접 파일이 있으면 스킵
 
@@ -325,7 +322,7 @@ async function seedFromFolderStructure(
     }
   };
 
-  await walk(rootDir, []);
+  await walk(rootDir, [], 0);
 }
 
 // 종합 출력 담당 메소드
