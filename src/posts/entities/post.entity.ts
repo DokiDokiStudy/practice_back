@@ -31,11 +31,26 @@ export class Post {
 
   @ManyToOne(() => Category, (category) => category.posts, { nullable: true })
   @JoinColumn({ name: 'categoryId' })
-  category: Category;
+  category: Category | null;
 
   @Exclude()
   @RelationId((post: Post) => post.category)
-  categoryId: number;
+  categoryId: number | null;
+
+  // Self-referencing for thread/reply structure
+  @ManyToOne(() => Post, (post: Post) => post.childrenPosts, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'parentPostId' })
+  parentPost: Post | null;
+
+  @Exclude()
+  @RelationId((post: Post) => post.parentPost)
+  parentPostId: number | null;
+
+  @OneToMany(() => Post, (post: Post) => post.parentPost)
+  childrenPosts: Post[];
 
   @Column({ length: 255 })
   title: string;

@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,10 +21,7 @@ import {
   PostGetResponseDto,
 } from './type/post-response.dto';
 import { plainToInstance } from 'class-transformer';
-import {
-  CommentDetailDto,
-  PostDetailResponseDto,
-} from './type/post-detail-response.dto';
+import { PostDetailResponseDto } from './type/post-detail-response.dto';
 
 @Injectable()
 export class PostService {
@@ -39,14 +37,31 @@ export class PostService {
   ) {}
 
   async get(filterDto: GetPostsFilterDto) {
-    const { categoryId, page = 1, limit = 10 } = filterDto;
+    const { categoryId, parentPostId, page = 1, limit = 10 } = filterDto;
 
     const query = this.postRepository
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.category', 'category');
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.parentPost', 'parentPost') // Join parent post
+      .loadRelationCountAndMap(
+        'post.childrenCount',
+        'post.childrenPosts',
+      ); // Count children
 
+    // Filter by category
     if (categoryId) {
-      query.andWhere('categoryId = :categoryId', { categoryId });
+      query.andWhere('post.categoryId = :categoryId', { categoryId });
+    }
+
+    // Filter by parent post (for thread queries)
+    if (parentPostId !== undefined) {
+      if (parentPostId === null) {
+        // Get only top-level posts (no parent)
+        query.andWhere('post.parentPostId IS NULL');
+      } else {
+        // Get threads for specific parent
+        query.andWhere('post.parentPostId = :parentPostId', { parentPostId });
+      }
     }
 
     query.orderBy('post.createdAt', 'DESC');
@@ -74,28 +89,82 @@ export class PostService {
   async create(request: AuthRequest, createPostDto: CreatePostDto) {
     try {
       const { id, nickName } = request.user;
-      const { categoryId, title, content } = createPostDto;
-      const category = await this.categoryRepository.findOneBy({
-        id: categoryId,
-      });
+      const { categoryId, parentPostId, title, content } = createPostDto;
 
-      if (!category)
-        throw new NotFoundException('존재하지 않는 카테고리입니다.');
+      // BUSINESS RULE VALIDATION
+      // Rule: Must provide either categoryId OR parentPostId (or both)
+      if (!categoryId && !parentPostId) {
+        throw new BadRequestException(
+          'categoryId 또는 parentPostId 중 하나는 필수입니다.',
+        );
+      }
 
-      await this.postRepository.save({
+      let category: Category | null = null;
+      let parentPost: Post | null = null;
+
+      // PARENT POST VALIDATION (Thread Post)
+      if (parentPostId) {
+        parentPost = await this.postRepository.findOne({
+          where: { id: parentPostId },
+          relations: ['category'], // Need parent's category for inheritance
+        });
+
+        if (!parentPost) {
+          throw new NotFoundException('존재하지 않는 부모 게시글입니다.');
+        }
+
+        // Inherit category from parent if not explicitly provided
+        if (!categoryId && parentPost.category) {
+          category = parentPost.category;
+        }
+      }
+
+      // CATEGORY VALIDATION (Standalone or Category Override)
+      if (categoryId) {
+        category = await this.categoryRepository.findOne({
+          where: { id: categoryId },
+          relations: ['parent'], // Load parent to check if root category
+        });
+
+        if (!category) {
+          throw new NotFoundException('존재하지 않는 카테고리입니다.');
+        }
+
+        // IMPORTANT: Allow root categories (fixes Issue #31-2)
+        // No restriction on category depth - all categories are valid
+      }
+
+      // FINAL VALIDATION: Ensure category is set
+      if (!category) {
+        throw new BadRequestException('유효한 카테고리를 지정해야 합니다.');
+      }
+
+      // CREATE POST
+      const newPost = await this.postRepository.save({
         user: { id },
         author: nickName,
         category,
+        parentPost: parentPost ? { id: parentPost.id } : null,
         title,
         content,
       });
 
-      return createApiResponse(200, '게시물이 생성되었습니다.');
+      return createApiResponse(200, '게시물이 생성되었습니다.', {
+        postId: newPost.id,
+        isThread: !!parentPostId,
+      });
     } catch (error) {
-      console.error(error);
-      throw error instanceof NotFoundException
-        ? error
-        : new InternalServerErrorException('게시물 생성에 실패했습니다.');
+      console.error('Post creation error:', error);
+
+      // Preserve specific errors
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('게시물 생성에 실패했습니다.');
     }
   }
 
@@ -133,23 +202,57 @@ export class PostService {
   async findOne(id: number) {
     const post = await this.postRepository.findOne({
       where: { id },
-      relations: ['comments', 'comments.children', 'likes'],
+      relations: [
+        'comments',
+        'comments.children',
+        'comments.likes', // Load comment likes
+        'comments.children.likes', // Load child comment likes
+        'likes',
+        'category', // Load category info
+        'parentPost', // Load parent post
+        'childrenPosts', // Load children posts
+        'childrenPosts.user', // Load children authors
+      ],
     });
 
     if (!post) throw new NotFoundException('존재하지 않는 게시물입니다.');
 
     const parentComments = post.comments.filter((comment) => !comment.parent);
 
-    const childrenComments = (comment: Comment): CommentDetailDto => ({
-      id: comment.id,
-      content: comment.content,
-      childrenCount: comment.children?.length ?? 0,
-      children: (comment.children ?? []).map(childrenComments),
-    });
+    // Flat comment structure with depth (Issue #31-4)
+    const comments: Array<{
+      id: number;
+      parentId: number | null;
+      depth: number;
+      author: string;
+      content: string;
+      likeCount: number;
+      createdAt: Date;
+      updatedAt: Date;
+    }> = [];
 
-    const commentsCount = parentComments.reduce((acc, cur) => {
-      return acc + (cur.children?.length || 0) + 1; // +1 for the parent comment itself
-    }, 0);
+    const flattenComments = (comment: Comment, depth: number = 0) => {
+      comments.push({
+        id: comment.id,
+        parentId: comment.parent?.id ?? null,
+        depth,
+        author: comment.author,
+        content: comment.content,
+        likeCount: comment.likes?.length ?? 0,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+      });
+
+      // Recursively flatten children
+      if (comment.children && comment.children.length > 0) {
+        comment.children.forEach((child) => flattenComments(child, depth + 1));
+      }
+    };
+
+    // Flatten all comments starting from parent comments
+    parentComments.forEach((comment) => flattenComments(comment));
+
+    const commentsCount = comments.length;
 
     return createApiResponse(
       200,
@@ -159,10 +262,32 @@ export class PostService {
         title: post.title,
         author: post.author,
         content: post.content,
+        categoryId: post.categoryId,
+        category: post.category
+          ? {
+              id: post.category.id,
+              name: post.category.name,
+            }
+          : null,
+        parentPostId: post.parentPostId, // Parent post ID
+        parentPost: post.parentPost
+          ? {
+              id: post.parentPost.id,
+              title: post.parentPost.title,
+              author: post.parentPost.author,
+            }
+          : null,
         // likes: post.likes,
         likeCounts: post.likes.length,
         commentsCount: commentsCount,
-        comments: parentComments.map(childrenComments),
+        comments, // Flat structure with depth (Issue #31-4)
+        childrenPosts: post.childrenPosts.map((child) => ({
+          // Children posts (threads)
+          id: child.id,
+          title: child.title,
+          author: child.author,
+          createdAt: child.createdAt,
+        })),
       },
       PostDetailResponseDto,
     );
