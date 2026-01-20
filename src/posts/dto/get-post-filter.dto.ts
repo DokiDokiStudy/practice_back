@@ -10,6 +10,11 @@ export class GetPostsFilterDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
+  parentPostId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   page?: number = 1;
 

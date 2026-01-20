@@ -27,6 +27,14 @@ export class PostGetResponseData {
   @Expose()
   categoryId: number;
 
+  @ApiProperty({ example: 1, required: false, description: '부모 게시글 ID (쓰레드인 경우)' })
+  @Expose()
+  parentPostId?: number | null;
+
+  @ApiProperty({ example: 5, required: false, description: '답글(자식 게시글) 개수' })
+  @Expose()
+  childrenCount?: number;
+
   @ApiProperty({ example: 'title' })
   @Expose()
   title: string;

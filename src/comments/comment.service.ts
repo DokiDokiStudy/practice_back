@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -57,8 +58,14 @@ export class CommentService {
 
       return createApiResponse(200, '댓글이 등록되었습니다.');
     } catch (error) {
-      console.error(error);
-      return createApiResponse(500, '댓글 등록에 실패했습니다.');
+      console.error('Comment creation error:', error);
+
+      // Preserve specific errors
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('댓글 등록에 실패했습니다.');
     }
   }
 
@@ -119,15 +126,24 @@ export class CommentService {
       if (!comment) throw new NotFoundException('존재하지 않는 댓글입니다.');
 
       if (user?.id !== comment.user.id)
-        throw new UnauthorizedException('게시물 작성자만 수정할 수 있습니다.');
+        throw new UnauthorizedException('댓글 작성자만 수정할 수 있습니다.');
 
       const updatedComment = Object.assign(comment, updateCommentDto);
       await this.commentRepository.save(updatedComment);
 
       return createApiResponse(200, '댓글이 수정되었습니다.');
     } catch (error) {
-      console.error(error);
-      return createApiResponse(500, '댓글 수정에 실패하였습니다.');
+      console.error('Comment update error:', error);
+
+      // Preserve specific errors
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('댓글 수정에 실패했습니다.');
     }
   }
 
@@ -142,23 +158,26 @@ export class CommentService {
         id: request.user.id,
       });
 
-      if (!comment) throw new NotFoundException('이미 삭제된 게시물입니다.');
+      if (!comment) throw new NotFoundException('이미 삭제된 댓글입니다.');
 
       if (user?.id !== comment.user.id)
-        throw new UnauthorizedException('게시물 작성자만 삭제할 수 있습니다.');
+        throw new UnauthorizedException('댓글 작성자만 삭제할 수 있습니다.');
 
       await this.commentRepository.softDelete({ id });
 
-      return {
-        statusCode: 200,
-        message: '댓글이 삭제되었습니다.',
-      };
+      return createApiResponse(200, '댓글이 삭제되었습니다.');
     } catch (error) {
-      console.error(error);
-      return {
-        statusCode: 500,
-        message: '댓글 삭제에 실패했습니다.',
-      };
+      console.error('Comment deletion error:', error);
+
+      // Preserve specific errors
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('댓글 삭제에 실패했습니다.');
     }
   }
 }
